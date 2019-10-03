@@ -295,8 +295,8 @@ function assembly_sr () {
   #???????
   #TSRFILES=`ls -m *.fq.gz | sed 's/ //g' | sed ':t;N;s/\n//;b t'`
   mkdir ./trinity_out_dir/
-  Trinity --seqType fq --max_memory 50G --CPU 16 \
-    --single single.norm.fq --no_normalize_reads
+  Trinity --seqType fq --max_memory 100G --CPU 16 \
+    --single single.norm.fq #--no_normalize_reads
     #--samples_file sample_file_?.txt   #--single ${TSRFILES}
   cd ../../
   mv ./trim/SR/trinity_out_dir ./
@@ -333,7 +333,7 @@ function assembly_pe () {
   #TLEFTFILES=`ls -m SRR*_1_val_1_renamed.fq.gz | sed 's/ //g' | sed ':t;N;s/\n//;b t'`
   #TRIGHTFILES=`ls -m SRR*_2_val_2_renamed.fq.gz | sed 's/ //g' | sed ':t;N;s/\n//;b t'`
   mkdir ./trinity_out_dir/
-  Trinity --seqType fq --max_memory 50G --CPU 16 \
+  Trinity --seqType fq --max_memory 100G --CPU 16 \
      --samples_file sample_file_?.txt
     #--output "${PRJNA_PATH}/trinity_out_dir/" \
   #Trinity --seqType fq --max_memory 50G --CPU 6 \
@@ -517,7 +517,7 @@ function difexpre () {
   #?????
   # heatmap plot
   cd ${PRJNA_PATH}/transcripts_count/edgeR
-  analyze_diff_expr.pl --matrix ../*.isoform.TMM.EXPR.matrix -P 1e-3 -C 2 
+  analyze_diff_expr.pl --matrix ../*.isoform.TMM.EXPR.matrix -P 1e-3 -C 2
   ##     (can run GO enrichment analysis with GO annotations file)
   ##     -P: p-value cutoff; -C: log 2 fold change cutoff (-C 2 means 4 times)
   cd ${PRJNA_PATH}

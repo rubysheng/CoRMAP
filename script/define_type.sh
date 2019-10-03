@@ -1,113 +1,89 @@
 #!/bin/bash
+# this is for define the dataset layout types
+# note: separate into 3 mainsteps: trimming, assembly, (quantify&annotations)
 
-function SR_ONLY () {
-  #1. trim
-  #trim_sr >& trim_report.log &
-  #2. generate cleaned data fastqc report
-  #multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ >& trimedqc_report.log &
-  #3. prepare: rename files, and input the grouping table of samples
-  #rename_sr >& rename_report.log &
-  #generateruninf
-  #4. de novo assembly
-  #assembly_sr >& assembly_report.log &
-  #5.alignment and transcript quantification
-  cd ${PRJNA_PATH}
-  mkdir ./transcripts_count/
-  count_sr >& count_report.log &
-  expressionmx >& expressionmx_report.log &
-  #rerun_abundance_estimation
-#  echo 1
-}
-function PE_ONLY () {
-  #1. trim
-  #trim_pe >& trim_report.log &
-  #2. generate cleaned data fastqc report
-  #multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ >& trimedqc_report.log &
-  #3. prepare: rename files, and input the grouping table of samples
-  #rename_pe >& rename_report.log &
-  #generateruninf
-  #4. de novo assembly
-  #assembly_pe >& assembly_report.log &
-  #5.alignment and transcript quantification
-  cd ${PRJNA_PATH}
-  mkdir ./transcripts_count/
-  count_pe >& count_report.log &
-  expressionmx >& expressionmx_report.log &
-#  echo 2
-}
-
-function BOTH () {
-  #1. trim
-  #trim_pe >& trimpe_report.log &
-  #trim_sr >& trimsr_report.log &
-  #2. generate cleaned data fastqc report
-  #multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ >& trimedqc_report.log &
-  #3. prepare: rename files, combine two types of layout data into one file, and input the grouping table of samples
-  #rename_pe >& renamepe_report.log &
-  #rename_sr >& renamesr_report.log &
-  #pretrinity_both >& pretrinity_report.log &
-  #generateruninf
-  #4. de novo assembly
-  #assembly_bo >& assembly_report.log &
-  #5.alignment and transcript quantification
-  #cd ${PRJNA_PATH}
-  #mkdir ./transcripts_count/
-  #count_bo >& count_report.log &
-  #expressionmx >& expressionmx_report.log &
-#  echo 3
-}
-
-function define () {
+function def_trimming () {
   # test layout type:
   SE_N=$[`ls *.fastq.gz|grep -v "_"| wc -l|cut -f1 -d' '`]
-  PE_L_N=$[`ls *.fastq.gz| grep -c "_1"|cut -f1 -d' '`]
-  PE_R_N=$[`ls *.fastq.gz| grep -c "_2"|cut -f1 -d' '`]
+  PE_L_N=$[`ls *.fastq.gz| grep -c "_R1"|cut -f1 -d' '`]
+  PE_R_N=$[`ls *.fastq.gz| grep -c "_R2"|cut -f1 -d' '`]
+  #PE_L_N=$[`ls *.fastq.gz| grep -c "_1"|cut -f1 -d' '`]
+  #PE_R_N=$[`ls *.fastq.gz| grep -c "_2"|cut -f1 -d' '`]
   # only pe
   if [ ${PE_L_N} -gt '0' ] && [ ${PE_L_N}=${PE_R_N} ] && [ ${SE_N} -eq '0' ]; then
     echo "Only Paired-end reads"
     #mkdir ${PRJNA_PATH}/trinity_out_dir/
-    PE_ONLY
+    #1. trim
+    trim_pe > trim_report.log
+    #2. generate cleaned data fastqc report
+    multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ > trimedqc_report.log
+    #3. prepare: rename files, and input the grouping table of samples
+    rename_pe > rename_report.log
 
   # only sr
   elif [ ${PE_L_N} -eq '0' ] && [ ${SE_N} -gt '0' ]; then
     echo "Only Single-end reads"
     #mkdir ${PRJNA_PATH}/trinity_out_dir/
-    SR_ONLY
+    #1. trim
+    trim_sr > trim_report.log
+    #2. generate cleaned data fastqc report
+    multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ > trimedqc_report.log
+    #3. prepare: rename files, and input the grouping table of samples
+    rename_sr > rename_report.log
 
   # both
   elif [ ${PE_L_N} -gt '0' ] && [ ${PE_L_N}=${PE_R_N} ] && [ ${SE_N} -gt '0' ]; then
     echo "Both types of layout here"
     #mkdir ${PRJNA_PATH}/trinity_out_dir/
-    BOTH
+    #1. trim
+    trim_pe > trimpe_report.log
+    trim_sr > trimsr_report.log
+    #2. generate cleaned data fastqc report
+    multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ > trimedqc_report.log
+    #3. prepare: rename files, combine two types of layout data into one file, and input the grouping table of samples
+    pretrinity_both > pretrinity_report.log
 
   # error
   else
     echo "there is no data can be analyzed"
+    exit 1
   fi
 }
 
-function define_finddir () {
+function def_finddir_assembly () {
   # find the directory under ./trim/
   DIR_SR="./trim/SR/"
   DIR_PE="./trim/PE/"
-  if [ -d "$DIR_SR" ] && [ ! -d "$DIR_PE" ]; then
-    echo "Only Single-end reads"
-    #mkdir ${PRJNA_PATH}/trinity_out_dir/
-    SR_ONLY
-
-  elif [ -d "$DIR_PE" ] && [ ! -d "$DIR_SR" ]; then
-    echo "Only Paired-end reads"
-    #mkdir ${PRJNA_PATH}/trinity_out_dir/
-    PE_ONLY
-
-  elif [ -d "$DIR_PE" ] && [ -d "$DIR_SR" ]; then
-    echo "Both types of layout here"
-    #mkdir ${PRJNA_PATH}/trinity_out_dir/
-    BOTH
-  # error
+  # check if the group design table has been input
+  if [[ -e 'sample_file_?.txt' ]]; then
+    # SR
+    if [ -d "$DIR_SR" ] && [ ! -d "$DIR_PE" ]; then
+      echo "Only Single-end reads"
+      mkdir ${PRJNA_PATH}/trinity_out_dir/
+      #4. de novo assembly
+      assembly_sr > assembly_report.log
+    # PE
+    elif [ -d "$DIR_PE" ] && [ ! -d "$DIR_SR" ]; then
+      echo "Only Paired-end reads"
+      mkdir ${PRJNA_PATH}/trinity_out_dir/
+      #4. de novo assembly
+      assembly_pe > assembly_report.log
+    # BOTH
+    elif [ -d "$DIR_PE" ] && [ -d "$DIR_SR" ]; then
+      echo "Both types of layout here"
+      mkdir ${PRJNA_PATH}/trinity_out_dir/
+      #4. de novo assembly
+      assembly_bo > assembly_report.log
+    # error
+    else
+      echo "there is no data can be analyzed"
+      exit 1
+    fi
   else
-    echo "there is no data can be analyzed"
+    echo "no input file for the group design"
+    exit 1
   fi
+
 }
 
 #function mainflow () {

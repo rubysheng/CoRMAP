@@ -16,7 +16,7 @@ function mainflow() {
   #this function is to call specific processing step
   if [[ '$step' == "trimming" ]]; then
     # check the quality of raw sequences
-    raw_qc
+    raw_qc > raw_qc.log
     # classify the layout types
     def_trimming
   elif [[ '$step' == "assembly" ]]; then
@@ -24,3 +24,7 @@ function mainflow() {
     def_finddir_assembly
   fi
 }
+
+read -p “Which step of processing will run? “ ANSWER
+
+mainflow '$ANSWER'

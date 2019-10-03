@@ -7,7 +7,7 @@
 function raw_qc () {
   mkdir ./raw_fastqc/
   # generate quality control with each untrimmed runs
-  fastqc -o ./raw_fastqc/ -f fastq -t 5 --extract SRR*.fastq.gz
+  fastqc -o ./raw_fastqc/ -f fastq -t 5 --extract *.fastq.gz #SRR*.fastq.gz
   # combine reports of all runs in a study to one quality control report
   multiqc ./raw_fastqc/ -o ./raw_fastqc/multiqc_output/
 
@@ -15,8 +15,8 @@ function raw_qc () {
   ls -l ./raw_fastqc/multiqc_output/multiqc_data/ > ./raw_fastqc/multiqc_output/log_list.txt
 
   # remove the separate fastqc files just keep the multiqc report
-  find ./raw_fastqc -type f -name "SRR*" -exec rm {} \;
-  find ./raw_fastqc -type d -name "SRR*" -exec rm -r {} \;
+  # find ./raw_fastqc -type f -name "SRR*" -exec rm {} \;
+  # find ./raw_fastqc -type d -name "SRR*" -exec rm -r {} \;
 }
 #=======================================================================================================
 ########
@@ -49,12 +49,13 @@ function trim_pe () {
   echo "there are ${PE_L_N} paired-end reads"
   echo =====================================
   # trim
-  ls *_1.fastq.gz | cat | sed 's/_1.fastq.gz//g' | cat > pairname.txt
+  ls *_R1.fastq.gz | cat | sed 's/_R1.fastq.gz//g' | cat > pairname.txt
+  #ls *_1.fastq.gz | cat | sed 's/_1.fastq.gz//g' | cat > pairname.txt
   # trim each pair
   FILE=pairname.txt
   while IFS= read -r line; do
-      Fq1n="${line}'_1.fastq.gz'"
-      Fq2n="${line}'_2.fastq.gz'"
+      Fq1n="${line}'_R1.fastq.gz'"
+      Fq2n="${line}'_R2.fastq.gz'"
       echo ${Fq1n}
       echo ${Fq2n}
       trim_galore --phred33 --fastqc --gzip --trim-n --output_dir ./trim/PE/ --paired ./${Fq1n} ./${Fq2n}

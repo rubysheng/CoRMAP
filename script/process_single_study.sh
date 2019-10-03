@@ -9,8 +9,8 @@
 
 date
 
-source ./process.sh # checked: works well
-source ./define_type.sh
+source $RUBY_GITHUB/script/process.sh # checked: works well
+source $RUBY_GITHUB/script/define_type.sh
 
 function mainflow() {
   #this function is to call specific processing step

@@ -12,15 +12,13 @@ function raw_qc () {
   conda activate multiqc  # activates environment
   multiqc ./raw_fastqc/ -o ./raw_fastqc/multiqc_output/
   conda deativate         # deactivates
-  
+
   touch ./raw_fastqc/multiqc_output/log_list.txt
   ls -l ./raw_fastqc/multiqc_output/multiqc_data/ > ./raw_fastqc/multiqc_output/log_list.txt
 
   # remove the separate fastqc files just keep the multiqc report
-  find ./raw_fastqc -type f -name "*_Replicate_*" -exec rm {} \;
-  find ./raw_fastqc -type d -name "*_Replicate_*" -exec rm -r {} \;
-  # find ./raw_fastqc -type f -name "SRR*" -exec rm {} \;
-  # find ./raw_fastqc -type d -name "SRR*" -exec rm -r {} \;
+  find ./raw_fastqc -type f -name "SRR*" -exec rm {} \;
+  find ./raw_fastqc -type d -name "SRR*" -exec rm -r {} \;
 }
 #=======================================================================================================
 ########
@@ -53,16 +51,15 @@ function trim_pe () {
   echo "there are ${PE_L_N} paired-end reads"
   echo =====================================
   # trim
-  ls *_R1.fastq.gz | cat | sed 's/_R1.fastq.gz//g' | cat > pairname.txt
-  #ls *_1.fastq.gz | cat | sed 's/_1.fastq.gz//g' | cat > pairname.txt
+  ls *_1.fastq.gz | cat | sed 's/_1.fastq.gz//g' | cat > pairname.txt
   # trim each pair
   FILE=pairname.txt
   while IFS= read -r line; do
-      Fq1n="${line}_R1.fastq.gz"
-      Fq2n="${line}_R2.fastq.gz"
+      Fq1n="${line}_1.fastq.gz"
+      Fq2n="${line}_2.fastq.gz"
       echo ${Fq1n}
       echo ${Fq2n}
-      trim_galore --phred33 --fastqc --gzip --trim-n --output_dir ./trim/PE/ --paired ./${Fq1n} ./${Fq2n} >> trim.log
+      trim_galore --phred33 --fastqc --gzip --trim-n --output_dir ./trim/PE/ --paired ./${Fq1n} ./${Fq2n} > trim.log
       echo "${line} finished trimming"
   done < "$FILE"
   echo " trim_galore ended as $(date)"

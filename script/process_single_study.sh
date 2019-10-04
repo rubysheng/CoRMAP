@@ -16,7 +16,7 @@ function mainflow() {
   #this function is to call specific processing step
   if [[ $1 == "trimming" ]]; then
     # check the quality of raw sequences
-    #raw_qc > raw_qc.log
+    raw_qc > raw_qc.log
     # classify the layout types
     def_trimming
   elif [[ $1 == "assembly" ]]; then

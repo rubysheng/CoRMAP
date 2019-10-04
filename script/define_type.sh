@@ -5,8 +5,8 @@
 function def_trimming () {
   # test layout type:
   SE_N=$[`ls *.fastq.gz|grep -v "_"| wc -l|cut -f1 -d' '`]
-  PE_L_N=$[`ls *.fastq.gz| grep -c "_R1"|cut -f1 -d' '`]
-  PE_R_N=$[`ls *.fastq.gz| grep -c "_R2"|cut -f1 -d' '`]
+  PE_L_N=$[`ls *.fastq.gz| grep -c "_1"|cut -f1 -d' '`]
+  PE_R_N=$[`ls *.fastq.gz| grep -c "_2"|cut -f1 -d' '`]
   #PE_L_N=$[`ls *.fastq.gz| grep -c "_1"|cut -f1 -d' '`]
   #PE_R_N=$[`ls *.fastq.gz| grep -c "_2"|cut -f1 -d' '`]
   # only pe

@@ -14,34 +14,40 @@ function def_trimming () {
     echo "Only Paired-end reads"
     #mkdir ${PRJNA_PATH}/trinity_out_dir/
     #1. trim
-    trim_pe > trim_report.log
+    trim_pe #> trim_report.log
     #2. generate cleaned data fastqc report
-    multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ > trimedqc_report.log
+    conda activate multiqc  # activates environment
+    multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ #> trimedqc_report.log
+    conda deativate         # deactivates
     #3. prepare: rename files, and input the grouping table of samples
-    rename_pe > rename_report.log
+    rename_pe #> rename_report.log
 
   # only sr
   elif [ ${PE_L_N} -eq '0' ] && [ ${SE_N} -gt '0' ]; then
     echo "Only Single-end reads"
     #mkdir ${PRJNA_PATH}/trinity_out_dir/
     #1. trim
-    trim_sr > trim_report.log
+    trim_sr #> trim_report.log
     #2. generate cleaned data fastqc report
-    multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ > trimedqc_report.log
+    conda activate multiqc  # activates environment
+    multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ #> trimedqc_report.log
+    conda deativate         # deactivates
     #3. prepare: rename files, and input the grouping table of samples
-    rename_sr > rename_report.log
+    rename_sr #> rename_report.log
 
   # both
   elif [ ${PE_L_N} -gt '0' ] && [ ${PE_L_N}=${PE_R_N} ] && [ ${SE_N} -gt '0' ]; then
     echo "Both types of layout here"
     #mkdir ${PRJNA_PATH}/trinity_out_dir/
     #1. trim
-    trim_pe > trimpe_report.log
-    trim_sr > trimsr_report.log
+    trim_pe #>> trimpe_report.log
+    trim_sr #>> trimsr_report.log
     #2. generate cleaned data fastqc report
-    multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ > trimedqc_report.log
+    conda activate multiqc  # activates environment
+    multiqc ./trim/ --outdir ./trim/trimmed_fastqc/ #>> trimedqc_report.log
+    conda deativate         # deactivates
     #3. prepare: rename files, combine two types of layout data into one file, and input the grouping table of samples
-    pretrinity_both > pretrinity_report.log
+    pretrinity_both #>> pretrinity_report.log
 
   # error
   else

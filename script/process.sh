@@ -9,7 +9,9 @@ function raw_qc () {
   # generate quality control with each untrimmed runs
   fastqc -o ./raw_fastqc/ -f fastq -t 5 --extract *.fastq.gz #SRR*.fastq.gz
   # combine reports of all runs in a study to one quality control report
+  conda activate multiqc
   multiqc ./raw_fastqc/ -o ./raw_fastqc/multiqc_output/
+  conda deactivate
 
   touch ./raw_fastqc/multiqc_output/log_list.txt
   ls -l ./raw_fastqc/multiqc_output/multiqc_data/ > ./raw_fastqc/multiqc_output/log_list.txt

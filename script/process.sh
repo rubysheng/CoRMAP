@@ -300,7 +300,7 @@ function assembly_sr () {
   #???????
   #TSRFILES=`ls -m *.fq.gz | sed 's/ //g' | sed ':t;N;s/\n//;b t'`
   mkdir ./trinity_out_dir/
-  Trinity --seqType fq --max_memory 100G --CPU 16 \
+  Trinity --seqType fq --max_memory 50G --CPU 16 \
     --single single.norm.fq #--no_normalize_reads
     #--samples_file sample_file_?.txt   #--single ${TSRFILES}
   cd ../../
@@ -338,7 +338,7 @@ function assembly_pe () {
   #TLEFTFILES=`ls -m SRR*_1_val_1_renamed.fq.gz | sed 's/ //g' | sed ':t;N;s/\n//;b t'`
   #TRIGHTFILES=`ls -m SRR*_2_val_2_renamed.fq.gz | sed 's/ //g' | sed ':t;N;s/\n//;b t'`
   mkdir ./trinity_out_dir/
-  Trinity --seqType fq --max_memory 100G --CPU 16 \
+  Trinity --seqType fq --max_memory 50G --CPU 16 \
      --samples_file sample_file_?.txt
     #--output "${PRJNA_PATH}/trinity_out_dir/" \
   #Trinity --seqType fq --max_memory 50G --CPU 6 \
@@ -354,7 +354,7 @@ function assembly_pe () {
 
 function assembly_bo () {
   echo ==== De Novo Assembly START ====
-  Trinity --seqType fq --max_memory 100G --CPU 16 \
+  Trinity --seqType fq --max_memory 50G --CPU 16 \
     --no_normalize_reads --run_as_paired \
     --single bigfile.fastq.gz
   echo

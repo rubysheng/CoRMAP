@@ -5,7 +5,7 @@
 # raw data quality control #
 ############################
 function raw_qc () {
-  mkdir ./raw_fastqc/
+  # mkdir ./raw_fastqc/
   # generate quality control with each untrimmed runs
   fastqc -o ./raw_fastqc/ -f fastq -t 5 --extract *.fastq.gz #SRR*.fastq.gz
   # combine reports of all runs in a study to one quality control report
@@ -177,6 +177,8 @@ function normal_pe () {
 
   insilico_read_normalization.pl --seqType fq --JM 50G --max_cov 50 \
                                  --left `ls -m *` --CPU 16
+
+
  #  --seqType <string>      :type of reads: ( 'fq' or 'fa')
  #  --JM <string>            :(Jellyfish Memory) number of GB of system memory to use for
  #                            k-mer counting by jellyfish  (eg. 10G) *include the 'G' char
@@ -301,7 +303,7 @@ function assembly_sr () {
   #TSRFILES=`ls -m *.fq.gz | sed 's/ //g' | sed ':t;N;s/\n//;b t'`
   mkdir ./trinity_out_dir/
   Trinity --seqType fq --max_memory 50G --CPU 16 \
-    --single single.norm.fq #--no_normalize_reads
+    --single single.norm.fq
     #--samples_file sample_file_?.txt   #--single ${TSRFILES}
   cd ../../
   mv ./trim/SR/trinity_out_dir ./
@@ -319,7 +321,7 @@ function assembly_sr_nochwo () {
   #TSRFILES=`ls -m *.fq.gz | sed 's/ //g' | sed ':t;N;s/\n//;b t'`
   mkdir ./trinity_out_dir/
   Trinity --seqType fq --max_memory 50G --CPU 16 \
-    --samples_file sample_file_?.txt   #--single ${TSRFILES}
+    --samples_file sample_file_?.txt  #--no_normalize_reads #--single ${TSRFILES}
   cd ../../
   mv ./trim/SR/trinity_out_dir ./
   #ls -l
@@ -344,6 +346,25 @@ function assembly_pe () {
   #Trinity --seqType fq --max_memory 50G --CPU 6 \
   #  --output ${PRJNA_PATH}/trinity_out_dir/ \
   #  --left ${TLEFTFILES} --right ${TRIGHTFILES}
+  cd ../../
+  mv ./trim/PE/trinity_out_dir ./
+  #ls -l
+  echo
+  echo ==== De Novo Assembly END ====
+  echo
+}
+
+function assembly_pe_nonomal () {
+  echo ==== De Novo Assembly START ====
+  mv ./sample_file_?.txt ./trim/PE/
+  cd ./trim/PE/
+  mkdir ./trinity_out_dir/
+  Trinity --seqType fq --max_memory 50G --CPU 25 --no_normalize_reads \
+    --left /home/ruby/projects/def-lukens/ruby/transcriptional_profiles/trinity_out_dir/insilico_read_normalization
+    /tmp_normalized_reads/left.fa \
+    --right /home/ruby/projects/def-lukens/ruby/transcriptional_profiles/trinity_out_dir/insilico_read_normalization
+    /tmp_normalized_reads/right.fa
+
   cd ../../
   mv ./trim/PE/trinity_out_dir ./
   #ls -l

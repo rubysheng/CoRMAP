@@ -11,6 +11,7 @@
 
 # set the main work directory that contains all datasets
 maindirectory=$(pwd)
+scriptloc='comparative-transcriptomic-analysis-pip\script\section1.1_setup_directory.sh'
 
-mkdir applications datasets 
+mkdir applications datasets
 #mkdir raw_data raw_fastqc trim trinity_out_dir transcripts_count

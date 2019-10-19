@@ -9,7 +9,8 @@
 #bash_version   :4.4.19(1)-release
 #============================================================================
 
+# set the main work directory that contains all datasets
+maindirectory=$(pwd)
 
-workdir=$(pwd)
-mkdir raw_data raw_fastqc trim trinity_out_dir transcripts_count
- 
+mkdir applications datasets 
+#mkdir raw_data raw_fastqc trim trinity_out_dir transcripts_count

@@ -3,13 +3,14 @@
 #description    :check if all software packages are well installed.
 #author         :Ruby(Yiru) Sheng
 #date           :20191016
-#version        :1.0
+#version        :1.1
 #usage          :./section1.2_checksoftware.sh
 #notes          :
 #bash_version   :4.4.19(1)-release
 #============================================================================
 
 source ${scriptloc}/section1.1_setup_directory.sh
+
 # cd ${maindirectory}/applications
 #
 # # all needed software packages:
@@ -155,3 +156,17 @@ source ${scriptloc}/section1.1_setup_directory.sh
 # # Guidience to install:
 # # use Miniconda3 to install
 # conda install -c bioconda trinotate
+
+echo "WHERE IS ascp: `which ascp` "
+echo "WHERE IS fastqc: `which fastqc`"
+echo "WHERE IS multiqc: `which multiqc`"
+echo "WHERE IS trim_galore: `which trim_galore`"
+echo "WHERE IS Trinity: `which $TRINITY_HOME/Trinity`"
+echo "WHERE IS bowtie2: `which bowtie2`"
+echo "WHERE IS jellyfish: `which jellyfish`"
+echo "WHERE IS salmon: `which salmon`"
+echo "WHERE IS samtools: `which samtools`"
+echo "WHERE IS transdecoder: `which transdecoder`"
+echo "WHERE IS trinotate: `which trinotate`"
+echo "If you miss some software packages, please go and check the INSTALLATION_GUIDENCE.txt"
+echo "Also, You can check the version of applications I used ;)"

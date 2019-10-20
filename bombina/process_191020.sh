@@ -188,6 +188,23 @@ function normal_pe () {
 
   insilico_read_normalization.pl --seqType fq --JM 50G --max_cov 50 \
                                  --left `ls -m *` --CPU 16
+ #  --seqType <string>      :type of reads: ( 'fq' or 'fa')
+ #  --JM <string>            :(Jellyfish Memory) number of GB of system memory to use for
+ #                            k-mer counting by jellyfish  (eg. 10G) *include the 'G' char
+ #  --max_cov <int>         :targeted maximum coverage for reads.
+ #
+ #  If paired reads:
+ #      --left  <string>    :left reads
+ #      --right <string>    :right reads
+ #
+ #  Or, if unpaired reads:
+ #      --single <string>   :single reads
+ #
+ #  Or, if you have read collections in different files you can use 'list' files, where each line in a list
+ #  file is the full path to an input file.  This saves you the time of combining them just so you can pass
+ #  a single file for each direction.
+ #      --left_list  <string> :left reads, one file path per line
+ #      --right_list <string> :right reads, one file path per line
   echo ==== Trinity In silico Read Normalization END ====
 }
 
@@ -286,12 +303,43 @@ function normal_pe () {
 #
 
 
+function assembly () {
+  # now we are in ${PRJNA_PATH}/trim/PE( or SR)
+  echo ==== De Novo Assembly START ====
+  cp *_renamed.fq.gz
+  cp ${PRJNA_PATH}/sample_file_?.txt /home/lewis/Documents/DeNovoAssambly/
+
+  #cd ./trim/SR/
+  cd /home/lewis/Documents/DeNovoAssambly/
+
+  mkdir ./trinity_out_dir/
+
+  conda activate salmon
+  $TRINITY_HOME/Trinity --seqType fq --max_memory 100G --CPU 16 \
+    --samples_file sample_file_?.txt --no_normalize_reads \
+    --full_cleanup
+  conda deactivate
+    #--single single.norm.fq --no_normalize_reads
+    #--samples_file sample_file_?.txt   #--single ${TSRFILES}
+    #--single *_ext_all_reads.normalized_K25_maxC50_minC0_pctSD10000.fq
+
+  cd  ${PRJNA_PATH}
+  #cd ../../
+
+  #mv ./trim/SR/trinity_out_dir ./
+
+  echo
+  echo ==== De Novo Assembly END ====
+  echo
+}
 
 function assembly_sr () {
   echo ==== De Novo Assembly START ====
   #mv ./sample_file_?.txt ./trim/SR/
+  #cp ./trim/SR/*_ext_all_reads.normalized_K25_maxC50_minC0_pctSD10000.fq /home/lewis/Documents/DeNovoAssambly/
+  cp ./trim/SR/*
   cp sample_file_?.txt /home/lewis/Documents/DeNovoAssambly/
-  cp ./trim/SR/*_ext_all_reads.normalized_K25_maxC50_minC0_pctSD10000.fq /home/lewis/Documents/DeNovoAssambly/
+
 
   #cd ./trim/SR/
   cd /home/lewis/Documents/DeNovoAssambly/
@@ -302,11 +350,12 @@ function assembly_sr () {
 
   conda activate salmon
   $TRINITY_HOME/Trinity --seqType fq --max_memory 100G --CPU 16 \
-    --single *_ext_all_reads.normalized_K25_maxC50_minC0_pctSD10000.fq --no_normalize_reads \
+    --samples_file sample_file_?.txt --no_normalize_reads \
     --full_cleanup
   conda deactivate
     #--single single.norm.fq --no_normalize_reads
     #--samples_file sample_file_?.txt   #--single ${TSRFILES}
+    #--single *_ext_all_reads.normalized_K25_maxC50_minC0_pctSD10000.fq
 
   cd  ${PRJNA_PATH}
   #cd ../../

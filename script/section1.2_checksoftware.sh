@@ -79,8 +79,21 @@ source ${scriptloc}/section1.1_setup_directory.sh
 # ################################################################
 #
 # # Guidience to install:
-# # use Miniconda3 to install
-# conda install -c bioconda trim_galore
+# # use package downloaded from github
+# $TRIMGALORE_HOME/trim_galore
+#
+# # related utilities:
+# cutadapt
+# ####################  VERSION LOG  #############################
+# 2.5
+# ################################################################
+#
+# fastqc
+# ####################  VERSION LOG  #############################
+# FastQC v0.11.8
+# ################################################################
+
+
 #
 # # 5. “trinity”
 #
@@ -138,9 +151,6 @@ source ${scriptloc}/section1.1_setup_directory.sh
 # # 6. “transdecoder”
 #
 # # Description: annotation
-# ####################  VERSION LOG  #############################
-# # FastQC v0.11.8
-# ################################################################
 #
 # # Guidience to install:
 # # use Miniconda3 to install
@@ -154,8 +164,27 @@ source ${scriptloc}/section1.1_setup_directory.sh
 # ################################################################
 #
 # # Guidience to install:
-# # use Miniconda3 to install
-# conda install -c bioconda trinotate
+# # download from github
+# wget -c https://github.com/Trinotate/Trinotate/archive/Trinotate-v3.2.1.tar.gz -O -| tar -xz
+# # set the path to TRINOTATE_HOME
+# echo 'export TRINOTATE_HOME=/media/lewis/Seagate_Backup_Plus_Drive/ruby/applications/Trinotate-Trinotate-v3.2.1' >> ~/.bashrc
+# # if there are some modules missing in @INC, use miniconda3 to install them
+# conda install -c bioconda perl-dbi
+# conda install -c bioconda perl-dbd-sqlite
+#
+# # related utilities:
+# # blastx
+# ####################  VERSION LOG  #############################
+# blastx: 2.9.0+
+# Package: blast 2.9.0, build May 31 2019 20:53:30
+# ################################################################
+#
+# # update_blastdb.pl --version
+# ####################  VERSION LOG  #############################
+# # /home/lewis/miniconda3/bin/update_blastdb.pl version 581818
+# ################################################################
+
+
 
 echo "WHERE IS ascp: `which ascp` "
 echo "WHERE IS fastqc: `which fastqc`"

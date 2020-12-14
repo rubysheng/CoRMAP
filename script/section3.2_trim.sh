@@ -30,7 +30,7 @@ function trim_sr () {
   echo "there are ${SE_N} single-end reads"
   echo ===================================
   # trim
-  trim_galore --phred33 --fastqc --gzip --trim-n --output_dir ./trim/SR/ `ls *.fastq.gz | grep -v "_"` &> trim_sr.log
+  $TRIMGALORE_HOME/trim_galore --phred33 --fastqc --gzip --trim-n --output_dir ./trim/SR/ `ls *.fastq.gz | grep -v "_"` &> trim_sr.log
   echo " trim_galore ended as $(date)"
   echo ==== End Trimming ====
   echo
@@ -55,7 +55,7 @@ function trim_pe () {
       Fq2n="${line}_2.fastq.gz"
       echo ${Fq1n}
       echo ${Fq2n}
-      trim_galore --phred33 --fastqc --gzip --trim-n --output_dir ./trim/PE/ --paired ./${Fq1n} ./${Fq2n} &> trim_pe.log
+      $TRIMGALORE_HOME/trim_galore --phred33 --fastqc --gzip --trim-n --output_dir ./trim/PE/ --paired ./${Fq1n} ./${Fq2n} &> trim_pe.log
       echo "${line} finished trimming"
   done < "$FILE"
   echo " trim_galore ended as $(date)"

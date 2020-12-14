@@ -10,7 +10,10 @@
 #============================================================================
 
 # set the main work directory that contains all datasets
-maindirectory=$(pwd)
-scriptloc='comparative-transcriptomic-analysis-pip/script/'
+MAIN=$(pwd) #?in ruby !!!
+# scriptloc='comparative-transcriptomic-analysis-pip/script/'
 
-mkdir applications datasets
+mkdir applications datasets annotation script
+
+SCRIPT_LOC="${MAIN}/script"
+mv comparative-transcriptomic-analysis-pip/script/* SCRIPT_LOC

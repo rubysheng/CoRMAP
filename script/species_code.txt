@@ -1,0 +1,5 @@
+Insect_code: IName INdme INcgl INcru INpme INpfu INngi INnvi
+Rodent_code: RDmus RDrat RDrat RDmus RDmus
+Fish_code: FIzebra FIsword
+roundworm_code: RWcel
+bombina_code: BOmbina

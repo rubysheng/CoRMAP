@@ -64,9 +64,19 @@ chmod +x $title
 /usr/bin/clear
 
 _create_anotherfile(){
+  printf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n" "Which step do you want to process? (input with number please)" \
+         "1 for trim / quality control." \
+         "2 for assembly." \
+         "3 for quantify." \
+         "4 for generate expression matrix." \
+         "5 for annotation." \
+         "0 for other steps."
+  read -r stepchosen
+  echo $stepchosen
   #Select between Vim or Emacs.
-      printf "%s\n%s\n%s\n\n" "If you want to start with another script with new header" "1 for Yes." "2 for No."
+      printf "%s\n%s\n%s\n" "If you want to start with another script with new header" "1 for Yes." "2 for No."
       read -r newfiledecision
+
 
       # Open the file with the cursor on the twelth line.
       case $newfiledecision in

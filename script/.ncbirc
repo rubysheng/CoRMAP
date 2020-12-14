@@ -1,0 +1,7 @@
+[BLAST]
+BLASTDB=/media/lewis/Seagate_Backup_Plus_Drive/ruby/annotation
+DATA_LOADERS=blastdb
+BLASTDB_PROT_DATA_LOADER=/media/lewis/Seagate_Backup_Plus_Drive/ruby/annotation/nr
+BLASTDB_NUCL_DATA_LOADER=/media/lewis/Seagate_Backup_Plus_Drive/ruby/annotation/nt
+[WINDOW_MASKER]
+WINDOW_MASKER_PATH=/media/lewis/Seagate_Backup_Plus_Drive/ruby/annotation/windowmasker

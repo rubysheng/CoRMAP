@@ -125,8 +125,34 @@ function assembly () {
 
   conda activate salmon
   $TRINITY_HOME/Trinity --seqType fq --max_memory 100G --CPU 16 \
-    --samples_file sample_file_?.txt --no_normalize_reads \
+    --samples_file sample_file_?.txt  \
     --full_cleanup
+  conda deactivate
+  # --no_normalize_reads
+  # move output back to the dataset directory and free the space
+  mv trinity_out_dir ${PRJNA_PATH}/
+  rm *
+
+  cd  ${PRJNA_PATH}
+  echo
+  echo ==== De Novo Assembly END ====
+  echo
+}
+
+function assembly_bo () {
+  echo ==== De Novo Assembly START ====
+
+  # move combined file to internal Drive
+  cp bigfile.fastq.gz /home/lewis/Documents/DeNovoAssambly/
+
+  cd /home/lewis/Documents/DeNovoAssambly/
+  # create the output directory to hold results
+  mkdir ./trinity_out_dir/
+
+  conda activate salmon
+  $TRINITY_HOME/Trinity --seqType fq --max_memory 50G --CPU 16 \
+    --no_normalize_reads --run_as_paired \
+    --single bigfile.fastq.gz
   conda deactivate
 
   # move output back to the dataset directory and free the space

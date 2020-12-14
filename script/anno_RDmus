@@ -337,10 +337,3 @@ $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastp blastp_TRIN
 $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_pfam TrinotatePFAM.out
 $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastx blastx_TRIN.outfmt6
 $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite report  > trinotate_annotation_report.xls
-
-# http://131.104.148.35:3000/cgi-bin/index.cgi
-$TRINOTATE_HOME/run_TrinotateWebserver.pl 3000
-/usr/sbin/lighttpd -D -f /media/lewis/Seagate_Backup_Plus_Drive/ruby/applications/Trinotate-Trinotate-v3.2.1/TrinotateWeb.conf/lighttpd.conf.port3000
-2020-04-14 21:03:11: (log.c.164) server started
-Can't locate CGI.pm in @INC (you may need to install the CGI module) (@INC contains: /home/lewis/miniconda3/lib/site_perl/5.26.2/x86_64-linux-thread-multi /home/lewis/miniconda3/lib/site_perl/5.26.2 /home/lewis/miniconda3/lib/5.26.2/x86_64-linux-thread-multi /home/lewis/miniconda3/lib/5.26.2 .) at /media/lewis/Seagate_Backup_Plus_Drive/ruby/applications/Trinotate-Trinotate-v3.2.1/TrinotateWeb/cgi-bin/index.cgi line 7.
-BEGIN failed--compilation aborted at /media/lewis/Seagate_Backup_Plus_Drive/ruby/applications/Trinotate-Trinotate-v3.2.1/TrinotateWeb/cgi-bin/index.cgi line 7.

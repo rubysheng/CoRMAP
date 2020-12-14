@@ -143,26 +143,38 @@
 #
 #########################################################################
 
+## sample_file_*.txt :
+##     MB-na�ve	MB-na�ve_rep1	./SRR7299147_trimmed_renamed.fq.gz
+##   or :(bombina)
+##     Control_min3to9H	Control_min3to9H_rep1	./SRR6320648_1_val_1_renamed.fq.gz	./SRR6320648_2_val_2_renamed.fq.gz
 
+### now we are in ${PRJNA_PATH}
 
 function count () {
-  # sample_file_*.txt :
-  #     MB-na�ve	MB-na�ve_rep1	./SRR7299147_trimmed_renamed.fq.gz
-  # or :(bombina)
-  #     Control_min3to9H	Control_min3to9H_rep1	./SRR6320648_1_val_1_renamed.fq.gz	./SRR6320648_2_val_2_renamed.fq.gz
+  # create a transcripts quantification folder to hold the results
+  mkdir ${PRJNA_PATH}/transcripts_count
+  #cd ${PRJNA_PATH}/transcripts_count
 
+  # move input files to this folder
+  find . -type f -name *renamed.fq.gz -exec cp -v {} ./transcripts_count \;
+  find . -name sample_file_*.txt -exec cp {} ./transcripts_count \;
 
-  # now we are in ${PRJNA_PATH}/trim/PE( or SR)
-  # go to this location in def_finddir_quantify!!!!
+  # go to ${PRJNA_PATH}/transcripts_count
+  cd ${PRJNA_PATH}/transcripts_count
 
-  $TRINITY_HOME/util/align_and_estimate_abundance.pl --transcripts ${PRJNA_PATH}/trinity_out_dir/Trinity.fasta --seqType fq \
+  $TRINITY_HOME/util/align_and_estimate_abundance.pl --seqType fq \
+      --transcripts ${PRJNA_PATH}/trinity_out_dir/Trinity.fasta \
       --est_method RSEM \
       --aln_method bowtie2 --trinity_mode --prep_reference \
       --samples_file sample_file_*.txt
 
-  # move transcripts quantification folders
-  mkdir ${PRJNA_PATH}/transcripts_count
-  find . -type d -exec mv {} ${PRJNA_PATH}/transcripts_count \;
+  # create a folder to hold processed(trim and rename) data
+  mkdir ${PRJNA_PATH}/processed_data
+  # move renamed files to the folder
+  mv *renamed.fq.gz ${PRJNA_PATH}/processed_data
+
+  # move sample_file to the ${PRJNA_PATH}
+  mv sample_file_*.txt ${PRJNA_PATH}
 
   cd ${PRJNA_PATH}
 }

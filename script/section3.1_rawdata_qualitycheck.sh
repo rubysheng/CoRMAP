@@ -2,8 +2,8 @@
 #title          :section3.1_rawdata_qualitycheck.sh
 #description    :Quality check for raw data before quality control.
 #author         :Ruby(Yiru) Sheng
-#date           :20191016
-#version        :1.1
+#date           :20191018
+#version        :1.2
 #usage          :./section3.1_rawdata_qualitycheck.sh
 #notes          :
 #bash_version   :4.4.19(1)-release
@@ -14,7 +14,7 @@
 # raw data quality control #
 ############################
 function raw_qc () {
-  mkdir ./raw_fastqc/
+  #mkdir ./raw_fastqc/
   # generate quality control with each untrimmed runs
   fastqc -o ./raw_fastqc/ -f fastq -t 5 --extract SRR*.fastq.gz
   # combine reports of all runs in a study to one quality control report
@@ -41,6 +41,8 @@ function check_rawqc () {
     if [ ! -d ./raw_qc/multiqc_output ]; then
       raw_qc
       echo "${file} is completed with raw data quality check"
+    else
+      echo "Raw data have been checked. Skip this step."
     fi
     cd ..
   done
@@ -48,4 +50,3 @@ function check_rawqc () {
 }
 
 check_rawqc
-

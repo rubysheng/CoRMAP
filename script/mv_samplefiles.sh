@@ -8,6 +8,7 @@
 #notes          :
 #bash_version   :4.4.19(1)-release
 #============================================================================
+
 mv ./Re__samplefiles/sample_file_1.txt ./data/PRJNA201010
 mv ./Re__samplefiles/sample_file_2.txt ./data/PRJNA201386
 mv ./Re__samplefiles/sample_file_3.txt ./data/PRJNA287145

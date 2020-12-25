@@ -198,21 +198,23 @@ function def_quant_expmx () {
 }
 
 
-# function def_ortho () {
-#   # under a Taxonomy_lst directory
-#   # check if there is a text file named as "*.lst" providing the TAX_CODE and PATH_TO_DATADIR
-#   if [ -e *.lst ]; then
-#     # check if the input directory existed
-#     input_dir="$(pwd)/input/"
-#     if [ ! -e ${input_dir} ]; then
-#       mkdir -v ${input_dir}
-#     fi
-#     echo ==========================
-#     echo === ortholog searching ===
-#     echo ==========================
-#
-#     run_ortho_pip 2>&1 | tee orthomcl_pip.log
-#   fi
-# }
-# 
-# ortho_sum 2>&1 | tee sum.log
+function def_ortho () {
+  # under a Taxonomy_lst directory
+  # check if there is a text file named as "*.lst" providing the TAX_CODE and PATH_TO_DATADIR
+  if [ -e *.lst ]; then
+    # check if the input directory existed
+    input_dir="$(pwd)/input/"
+    if [ ! -e ${input_dir} ]; then
+      mkdir -v ${input_dir}
+    fi
+    echo ==========================
+    echo === ortholog searching ===
+    echo ==========================
+
+    run_ortho_pip 2>&1 | tee orthomcl_pip.log
+  else 
+    echo "Missing the list of TAX_CODEs and PATH_TO_DATADIRs"
+  fi
+
+}
+

@@ -49,11 +49,13 @@ $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl \
           --method DESeq2 \
           --output PRJNA541005_dir \
           --samples_file ./deg/samples_described_PRJNA541005.txt
+
+          
 while IFS= read -r line; do
   awk -v pat="${line}" '{ if ($0 ~ pat) {print} }' glmLRT_*.csv
 done < uniq_dge_group.lst
 
-while IFS= read -r line; do   
+while IFS= read -r line; do
   awk -v pat="${line}_" '{ if ($0 ~ pat) {print} }' glmLRT_*.csv > tmp
   BO_perg_ave=`grep "BO" tmp | cut -d"," -f 1,2 | sed "s/,/ /" | awk '{ total += $2; count++ } END { print total/count }'`
   FI_perg_ave=`grep "FI" tmp | cut -d"," -f 1,2 | sed "s/,/ /" | awk '{ total += $2; count++ } END { print total/count }'`

@@ -1,4 +1,4 @@
-08pergroup00#!/bin/bash
+#!/bin/bash
 #=======================================================================================================
 ############################
 # orthomcl results summary #
@@ -7,7 +7,7 @@
 mkdir ./analyze/
 function ortho_sum() {
   #in the *_lst/ directory
-  study_lst=`ls -1 ./input/*_pep.fasta`
+  study_lst=`ls -1 ./input/*_pep.fasta` 
   for file in `ls -1 ./input/*_pep.fasta`; do
     file=`basename $file`
     sp_name=${file%.fasta}
@@ -133,29 +133,17 @@ function ortho_dnastat() {
 function ortho_allsp_g() {
   #in the *_lst/ directory
   cd ./analyze/stat/
+  echo `head -1 groups.counts.stat` SUM > allsp_g.counts.stat
 
-  echo `head -1 groups.spname.counts.stat` SUM > allsp_g.spname.counts.stat
+  awk '{for(i=2;i<=NF;i++){if($i+0 < 1) next}} 1' groups.counts.stat | awk '{sum=0; for (i=2; i<=NF; i++) { sum+= $i } print $0,sum}' >> allsp_g.counts.stat
 
-  awk '{for(i=2;i<=NF;i++){if($i+0 < 1) next}} 1' groups.spname.counts.stat | awk '{sum=0; for (i=2; i<=NF; i++) { sum+= $i } print $0,sum}' >> allsp_g.spname.counts.stat
-
-  awk '{for(i=2;i<=NF;i++){if($i+0 < 1) next}} 1' groups.spname.counts.stat | awk '{ print $1 }' > tmp.allsp_g.spname.lst
+  awk '{for(i=2;i<=NF;i++){if($i+0 < 1) next}} 1' groups.counts.stat | awk '{ print $1 }' > tmp.allsp_g.lst
 
   while IFS= read -r line; do
-    awk -v pat="$line" '{ if ($0 ~ pat) {print} }' ../../output/groups/groups.txt >> ../allsp_groups.spname.txt
-  done < tmp.allsp_g.spname.lst
-  rm tmp.allsp_g.spname.lst
+    awk -v pat="$line" '{ if ($0 ~ pat) {print} }' ../../output/groups/groups.txt >> ../allsp_groups.txt 
+  done < tmp.allsp_g.lst
+  rm tmp.allsp_g.lst
   cd ../../
-  # echo `head -1 groups.counts.stat` SUM > allsp_g.counts.stat
-  #
-  # awk '{for(i=2;i<=NF;i++){if($i+0 < 1) next}} 1' groups.counts.stat | awk '{sum=0; for (i=2; i<=NF; i++) { sum+= $i } print $0,sum}' >> allsp_g.counts.stat
-  #
-  # awk '{for(i=2;i<=NF;i++){if($i+0 < 1) next}} 1' groups.counts.stat | awk '{ print $1 }' > tmp.allsp_g.lst
-  #
-  # while IFS= read -r line; do
-  #   awk -v pat="$line" '{ if ($0 ~ pat) {print} }' ../../output/groups/groups.txt >> ../allsp_groups.txt
-  # done < tmp.allsp_g.lst
-  # rm tmp.allsp_g.lst
-  # cd ../../
 }
 
 
@@ -169,7 +157,7 @@ function ortho_perg_seq() {
       file=${file%_pep.fasta}"_RSEM.fasta"
       echo ${file}
       find /media/lewis/Seagate_Backup_Plus_Drive/ruby/data/ -name ${file} -exec cp -v {} fasta_dir/ \;
-    done
+    done 
   fi
 
   # randomly select 10 (test with 2) groups to test the similarity of sequences in groups
@@ -179,48 +167,48 @@ function ortho_perg_seq() {
   fi
 
   cd per_group
-  # shuf -n 10 ../../output/groups/groups.txt > 10g_groups.txt  # test all groups
-  # while IFS= read -r line; do
-  #   echo ${line} > 10g_pergroup.txt
-  #   group_num=`awk '{print $1}' 10g_pergroup.txt`
-  #   group_num=${group_num%:}
-  #   echo ${group_num}
-  #   sed "s/ P/\nP/g" 10g_pergroup.txt | tail -n +2 > 10g_pergroup.pepname
-  #
-  #   while IFS= read -r line; do
-  #     trimmed=`echo $line | cut -d'|' -f 2`
-  #     awk -v pat="$trimmed" '{ if ($0 ~ pat) {print; getline; print;} }' ../../input/* >> 10g_pergroup.pepseq.fasta
-  #     echo ${trimmed%.p*}
-  #     isoform=${trimmed%.p*}
-  #     awk -v pat="$isoform" '{ if ($0 ~ pat) {print; getline; print;} }' ../../fasta_dir/* >> 10g_pergroup.dnaseq.fasta
-  #   done < 10g_pergroup.pepname
-  #
-  #   output=$group_num".dnaseq.fasta"
-  #   mv 10g_pergroup.dnaseq.fasta ${output}
-  #   output=$group_num".pepseq.fasta"
-  #   mv 10g_pergroup.pepseq.fasta ${output}
-  #   rm 10g_pergroup*
-  # done < 10g_groups.txt
-
-  cp ../allsp_groups.spname.txt allsp_10g_groups.txt  # extract all-species-included groups
-  # shuf -n 10 ../allsp_groups.txt > allsp_10g_groups.txt  # only test those all-species-included groups
+  shuf -n 10 ../../output/groups/groups.txt > 10g_groups.txt  # test all groups
   while IFS= read -r line; do
     echo ${line} > 10g_pergroup.txt
     group_num=`awk '{print $1}' 10g_pergroup.txt`
     group_num=${group_num%:}
     echo ${group_num}
-    sed "s/ P/\nP/g" 10g_pergroup.txt | tail -n +2 > 10g_pergroup.pepname
+    sed "s/ P/\nP/g" 10g_pergroup.txt | tail -n +2 > 10g_pergroup.pepname 
+
+    while IFS= read -r line; do
+      trimmed=`echo $line | cut -d'|' -f 2` 
+      awk -v pat="$trimmed" '{ if ($0 ~ pat) {print; getline; print;} }' ../../input/* >> 10g_pergroup.pepseq.fasta
+      echo ${trimmed%.p*}
+      isoform=${trimmed%.p*}
+      awk -v pat="$isoform" '{ if ($0 ~ pat) {print; getline; print;} }' ../../fasta_dir/* >> 10g_pergroup.dnaseq.fasta
+    done < 10g_pergroup.pepname
+    
+    output=$group_num".dnaseq.fasta"
+    mv 10g_pergroup.dnaseq.fasta ${output}
+    output=$group_num".pepseq.fasta"
+    mv 10g_pergroup.pepseq.fasta ${output}
+    rm 10g_pergroup*
+  done < 10g_groups.txt
+
+
+  shuf -n 10 ../allsp_groups.txt > allsp_10g_groups.txt  # only test those all-species-included groups
+  while IFS= read -r line; do
+    echo ${line} > 10g_pergroup.txt
+    group_num=`awk '{print $1}' 10g_pergroup.txt`
+    group_num=${group_num%:}
+    echo ${group_num}
+    sed "s/ P/\nP/g" 10g_pergroup.txt | tail -n +2 > 10g_pergroup.pepname 
 
     while IFS= read -r line; do
       trimmed=`echo $line | cut -d'|' -f 2`
       awk -v pat="$trimmed" '{ if ($0 ~ pat) {print; getline; print;} }' ../../input/* >> 10g_pergroup.pepseq.fasta
-      # echo ${trimmed%.p*}
-      # isoform=${trimmed%.p*}
-      # awk -v pat="$isoform" '{ if ($0 ~ pat) {print; getline; print;} }' ../../fasta_dir/* >> 10g_pergroup.dnaseq.fasta
+      echo ${trimmed%.p*}
+      isoform=${trimmed%.p*}
+      awk -v pat="$isoform" '{ if ($0 ~ pat) {print; getline; print;} }' ../../fasta_dir/* >> 10g_pergroup.dnaseq.fasta
     done < 10g_pergroup.pepname
-
-    # output="allsp_"$group_num".dnaseq.fasta"
-    # mv 10g_pergroup.dnaseq.fasta ${output}
+    
+    output="allsp_"$group_num".dnaseq.fasta"
+    mv 10g_pergroup.dnaseq.fasta ${output}
     output="allsp_"$group_num".pepseq.fasta"
     mv 10g_pergroup.pepseq.fasta ${output}
     rm 10g_pergroup*
@@ -229,65 +217,23 @@ function ortho_perg_seq() {
 
 }
 
-
-
-
-# ##############################################################################
-# split -d -l 200  allsp_10g_groups.txt split.allsp_groups
-#
-# while IFS= read -r line; do
-#     echo ${line} > pergroup03
-#     group_num=`awk '{print $1}' pergroup03`
-#     group_num=${group_num%:}
-#     echo ${group_num}
-#     sed "s/ P/\nP/g" pergroup03 | tail -n +2 > pergroup.pepname03
-#
-#     while IFS= read -r line; do
-#       trimmed=`echo $line | cut -d'|' -f 2`
-#       awk -v pat="$trimmed" '{ if ($0 ~ pat) {print; getline; print;} }' \
-#          ../../input/* >> pergroup.pepseq.fasta03
-#     done < pergroup.pepname03
-#
-#     output="allsp_"$group_num".pepseq.fasta"
-#     mv pergroup.pepseq.fasta03 ${output}
-#     rm pergroup*03
-# done < split.allsp_groups03
-#
-#
-# cat allsp_group_*.pepseq.fasta >
-#
-# rodent_lst : 2490有 -2239无 之间的group没有提取 (在split*00里)
-# insect_lst : 2463有 -1910无 之间的group没有提取 (在split*00里)
-#
-# awk 'BEGIN{RS=">"}NR>1{sub("\n","\t"); gsub("\n",""); print RS$0}' rodent_allsp_pep.fasta | awk '!seen[$1]++' | awk -v OFS="\n" '{print $1,$2}' > rodent_allsp_sort_pep.fasta
-
-# mv rodent_allsp_pep.fasta ../
-# mv fish_allsp_pep.fasta ../
-# mv insect_allsp_pep.fasta ../
-# cd ..
-# sudo -S perl5.22.1 $ORTHMCL_PIP/scripts/orthomcl-pipeline.pl -i input/ -o output/ -m ./orthomcl.config -c ./orthomcl-pip.conf --nocompliant
-# pluteus123
-
-# ##############################################################################
-
-
 # step1
 #sudo chmod 777 output/groups/*
 #ortho_sum 2>&1 | tee ortho_sum.log
 #ortho_stat 2>&1 | tee ortho_stat.log
 #mkdir ./analyze/stat/
-# mv ./analyze/groups.counts.txt ./analyze/stat/groups.counts.stat
-# mv ./analyze/cluster.stat ./analyze/stat/cluster.stat
-# ortho_dnasum
-# ortho_dnastat
+mv ./analyze/groups.counts.txt ./analyze/stat/groups.counts.stat
+mv ./analyze/cluster.stat ./analyze/stat/cluster.stat
+ortho_dnasum
+ortho_dnastat
 
 # step2
-ortho_allsp_g
+ortho_allsp_g 
 
 # step3
 ortho_perg_seq
 
 # step4
-# cd ./analyze/per_group
-# source /media/lewis/New_Seagate_Drive_8TB/ruby/github/bombina/comparative-transcriptomic-analysis-pip/script/ortho_check.sh
-# cd ../..
+cd ./analyze/per_group
+source /media/lewis/New_Seagate_Drive_8TB/ruby/github/bombina/comparative-transcriptomic-analysis-pip/script/ortho_check.sh
+cd ../..

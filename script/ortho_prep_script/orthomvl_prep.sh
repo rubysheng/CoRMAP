@@ -7,15 +7,6 @@
 #       INcgl /media/lewis/Seagate_Backup_Plus_Drive/ruby/data/PRJNA289731
 #       INngi /media/lewis/Seagate_Backup_Plus_Drive/ruby/data/PRJNA241010
 #       INnvi /media/lewis/Seagate_Backup_Plus_Drive/ruby/data/PRJNA240970
-#         *delimited by a space
-
-# direction:
-#   In a Taxonomy_directory with a list table as shown above,
-#   create a output folder to hold the pep fasta quant_files
-#       mkdir output
-#   then run the command:
-#       source /media/lewis/New_Seagate_Drive_8TB/ruby/github/bombina/comparative-transcriptomic-analysis-pip/script/orthomvl_prep.sh -l orthomcl_prep_RD.lst -o output 2>&1 | tee prep.log
-
 
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 input_dir=""
@@ -51,39 +42,24 @@ function preprocessFA() {
   OUT_DIR="$2"
   file=`basename $(pwd)`
   FA_NEWNAME="${file}_RSEM.fasta"
-  MAP_NEWNAME="${file}_RSEM.gene_trans_map"
-  PE_NAME="${FA_NEWNAME}.transdecoder.pep"
-  PE_NEWNAME="${file}_pep.fasta"
-  # change fasta file and gene_trans_map file format
   if [ ! -e ${FA_NEWNAME} ]; then
     echo "No renamed file"
-    echo "    Reformating Trinity.fasta.RSEM.transcripts.fa to "${FA_NEWNAME}
+    echo "    Renaming Trinity.fasta.RSEM.transcripts.fa to "${FA_NEWNAME}
     echo
     sed "s+TRINITY+${file}+g" trinity_out_dir/Trinity.fasta.RSEM.transcripts.fa > ${FA_NEWNAME}
     sed -i "s/_/./g" ${FA_NEWNAME}
-    echo "Adding the taxon code"
-    sed -i "s/>/>${TAX_CODE}_/g" ${FA_NEWNAME}
-    # change the header of gene_trans_map
-    find . -name "Trinity.fasta.gene_trans_map" -exec cp -v {} ./${MAP_NEWNAME} \;
-    sed -i "s+TRINITY+${TAX_CODE}_${file}+g" ${MAP_NEWNAME}
   fi
-  # protein sequence prediction
-  if [ ! -e ${PE_NAME} ]; then
-    echo "Translate to protein sequence"
-    echo
-    TransDecoder.LongOrfs -t ${FA_NEWNAME} --gene_trans_map ${MAP_NEWNAME}
-    TransDecoder.Predict -t ${FA_NEWNAME}
-  else
-    echo "Renaming "${PE_NAME}" to "${PE_NEWNAME}"."
-    cp ${PE_NAME} ${PE_NEWNAME}
-    echo "Reformating "${PE_NEWNAME}
-    awk '{if(NR==1) {print $0} else {if($0 ~ /^>/) {print "\n"$0} else {printf $0}}}' ${PE_NEWNAME} > tmp.fa
-    printf "\n" >> tmp.fa
-    echo "Shortening the header of sequences"
-    awk '/>/ { print $1; getline; print $0 }' tmp.fa > ${PE_NEWNAME}
-    echo "Moving to the input directory"
-    cp -v ${PE_NEWNAME} ${OUT_DIR}
-  fi
+  #echo "Adding the taxon code"
+  #sed -i "s/>/>${TAX_CODE}_/g" ${FA_NEWNAME}
+  #echo "Translate to protein sequence"
+  #echo
+  #TransDecoder.LongOrfs -t ${FA_NEWNAME}
+  #TransDecoder.Predict -t ${FA_NEWNAME}
+  echo "Moving to the input directory"
+  PE_NAME=${FA_NEWNAME}".transdecoder.pep"
+  awk '/>/ { print $1; getline; print $0 }' ${PE_NAME} > tmp.pep
+  mv tmp.pep ${PE_NAME}
+  cp -v ${PE_NAME} ${OUT_DIR}
 }
 
 if [ ! "${list}" = "" ]; then # have a input list
@@ -92,7 +68,7 @@ if [ ! "${list}" = "" ]; then # have a input list
   checkarray=()
 
   if [ ! -e ${input_dir} ]; then
-    echo "Creating the input directory to hold all protein fasta files"
+    echo "Creatng the input directory"
     mkdir -v ${input_dir}
   fi
 
@@ -106,12 +82,11 @@ if [ ! "${list}" = "" ]; then # have a input list
     preprocessFA ${SP_CODE} ${input_dir}
     echo
     echo "Check if the file is well - prepared in "${input_dir}
-    cd ${input_dir}
-    mvd_pep=`basename ${DIR}`"_pep.fasta"
+    cd ${base_dir}
+    mvd_pep="input/"`basename ${DIR}`"_RSEM.fasta.transdecoder.pep"
     if [ ! -e ${mvd_pep} ]; then  # test if the pep file is moved to the destination
       echo "No file named "${mvd_pep}" moved to input directory"
     else
-      cd ..
       find ${input_dir} -name ${mvd_pep} -exec ls -l {} \;
       acc=`basename ${DIR}`
       checkarray+=("${acc}")
@@ -120,10 +95,17 @@ if [ ! "${list}" = "" ]; then # have a input list
   count_l=`wc -l < ${list}`
 fi
 
-if [ ! "${output_dir}" = "" ] && [ "${#checkarray[@]}" = "${count_l}" ]; then
-  if [ -d "${output_dir}" ]; then
-    sudo rm -r ${output_dir}
-  fi
-  printf "pluteus123\n" | sudo -S perl5.22.1 $ORTHMCL_PIP/scripts/orthomcl-pipeline.pl \
-    -i input/ -o output/ -m ../orthomcl.conf -c ../orthomcl_pip.conf --nocompliant
-fi
+#if [ ! "${output_dir}" = "" ] && [ "${#checkarray[@]}" = "${count_l}" ]; then
+  # if [ -d "${output_dir}" ]； then
+  #   sudo rm -r ${output_dir}
+  # fi
+ # printf "pluteus123\n" | sudo -S perl5.22.1 $ORTHMCL_PIP/scripts/orthomcl-pipeline.pl \
+  #  -i input/ -o ${output_dir} -m $ORTHMCL_PIP/orthomcl.conf --nocompliant
+#fi
+
+#sudo -S perl5.22.1 $ORTHMCL_PIP/scripts/orthomcl-pipeline.pl -i input/ -o output/ -m $ORTHMCL_PIP/orthomcl.conf --nocompliant
+
+#head -n 1 *.fasta |grep "^>"
+
+#sudo -S perl5.22.1 /home/lewis/Documents/test_OSA/orthomcl-pipeline/scripts/orthomcl-pipeline_nomysql.pl -i input/ -o output/ -m orthomcl.conf -c orthomcl-pip.conf --nocompliant
+

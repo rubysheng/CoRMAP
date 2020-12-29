@@ -7,19 +7,13 @@ The development of RNA sequencing (RNA-Seq) techniques has provided efficient me
 Created by Yiru Sheng, Andreas Heyland, and Ayesha Ali at the University of Guelph, Canada. Released under the terms of the General Public License, version 3.0 (GPLv3).
 
 ## Installation
-See the [installation]() documentation.
+See the [installation](https://github.com/rubysheng/CMRP/blob/bombina/doc/Install.md) documentation.
 
+## Usage
+To use CMRP, run each section of code step by step (recommended). For example:
+  $ source script/section1.1_download_datasets.sh
 
-CMRP
-Trinity assembles transcript sequences from Illumina RNA-Seq data.
+For quick usage, run the automatically processing command:
+  $ source CMRP.sh
 
-Download Trinity here.
-
-Build Trinity by typing 'make' in the base installation directory.
-
-Assemble RNA-Seq data like so:
-
- Trinity --seqType fq --left reads_1.fq --right reads_2.fq --CPU 6 --max_memory 20G
-Find assembled transcripts as: 'trinity_out_dir/Trinity.fasta'
-
-Use the documentation links in the right-sidebar to navigate this documentation, and contact our Google group for technical support.
+More documents about the usage of all sections, please check [here](https://github.com/rubysheng/CMRP/blob/bombina/doc/Usage.md).

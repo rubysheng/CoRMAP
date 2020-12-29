@@ -11,9 +11,11 @@ See the [installation](https://github.com/rubysheng/CMRP/blob/bombina/doc/Instal
 
 ## Usage
 To use CMRP, run each section of code step by step (recommended). For example:
+
   $ source script/section1.1_download_datasets.sh
 
 For quick usage, run the automatically processing command:
+
   $ source CMRP.sh
 
 More documents about the usage of all sections, please check [here](https://github.com/rubysheng/CMRP/blob/bombina/doc/Usage.md).

@@ -9,8 +9,6 @@
 #bash_version   :4.4.19(1)-release
 #============================================================================
 
-source ${scriptloc}/section1.1_setup_directory.sh
-
 # cd ${maindirectory}/applications
 #
 # # all needed software packages:

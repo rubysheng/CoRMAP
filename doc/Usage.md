@@ -31,7 +31,7 @@ The overview of processing workflow in CMRP:
 
 ### Set up the structure of folder
 
-For the data management, create those suggested folder structure by using the script ___script/section0.1_setup.sh___ or manage your input datasets as the following structure:
+For the data management, create those suggested folder structure by using the script ___script/section0.1_setup.sh___ with a list of meta-dataset names (check ___sample/list_of_projectnames___) or manage your input datasets as the following structure:
 
 ![folder-structure](https://github.com/rubysheng/CMRP/blob/bombina/pics/dir_structure.png)
 
@@ -39,7 +39,7 @@ For the data management, create those suggested folder structure by using the sc
 
 ## Download datasets
 
-CMRP includes a small utility ___script/section0.3_download.sh___ for downloading raw data from published RNA-Seq experiments by their database accession numbers.
+CMRP includes a small utility ___script/section0.3_download.sh___ for downloading raw data from published RNA-Seq experiments by their database accession numbers (check ___sample/list_of_projectnames___).
 
 Datasets containing multiple runs were downloaded from the Sequence Read Archive (SRA) through a list of FTP links, obtained from the European Nucleotide Archive (ENA).
 
@@ -50,6 +50,8 @@ The example input text files for `Ascp` were provided under the ___sample/downlo
 [Back to top](#usage-the-cmrp)
 
 ## Clean data
+
+For every single dataset, go to its own directory under ___./data/___, and run with the pipeline.
 
 Raw data and cleaned data quality checks were performed using the [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc) and [MultiQC](https://multiqc.info/). `MultiQC` is useful to generate the combined reports of quality check for several runs.
 

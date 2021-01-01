@@ -1,0 +1,8 @@
+Fear	Fear_rep1	./SRR1408854_trimmed_renamed.fq.gz
+Control	Control_rep1	./SRR1408848_trimmed_renamed.fq.gz
+Fear	Fear_rep2	./SRR1408852_trimmed_renamed.fq.gz
+Control	Control_rep2	./SRR1408850_trimmed_renamed.fq.gz
+Control	Control_rep3	./SRR1408851_trimmed_renamed.fq.gz
+Control	Control_rep4	./SRR1408849_trimmed_renamed.fq.gz
+Fear	Fear_rep3	./SRR1408855_trimmed_renamed.fq.gz
+Fear	Fear_rep4	./SRR1408853_trimmed_renamed.fq.gz

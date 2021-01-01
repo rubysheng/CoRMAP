@@ -1,17 +1,17 @@
 #!/bin/bash
 ############################################################################
-# This script is for process a study from the beginning (after downloaded) #
-# created date: 2019-10-03 #
-# author : Ruby Sheng #
-# input files format: *.fastq.gz ... #
-# output files: expression matrix, annotation table ... #
+# This script is for process one dataset from the beginning (after downloaded)
+# created date: 2019-10-03
+# author : Ruby Sheng
+# input files format: *.fastq.gz ...
+# output files: expression matrix, annotation table ...
 ############################################################################
 
 date
 
 export PRJNA_PATH=$(pwd)
-source $RUBY_SCRIPTS/process.sh # checked: works well
-source $RUBY_SCRIPTS/define_type.sh
+source $SCRIPTS/process.sh # checked: works well
+source $SCRIPTS/define_type.sh
 
 _choosestep(){
 
@@ -22,7 +22,7 @@ _choosestep(){
          "3 for assembly." \
          "4 for quantify & generate expression matrix." \
          "5 for annotate with predicted protein sequence & run orthomcl-pip." \
-         "0 for other steps."
+         "0 for all."
   read -r stepchosen
 
   # Start to process data.
@@ -33,7 +33,7 @@ _choosestep(){
       ;;
     2) #normalize
     # need to find the "SR" or "PE" folder
-    def_Normalize
+    def_normalize
       ;;
     3) #assembly
     # need to find the "SR" or "PE" folder
@@ -47,9 +47,12 @@ _choosestep(){
     # need to prepare a list of TAX_CODEs and PATH_TO_DATADIRs
     def_ortho
       ;;
-    0) #other steps
-    printf "%s\n%s\n\n" "Find other scripts please." \
-             "Press <Ctrl-c> to quit."
+    0) #all
+    def_trimming
+    def_normalize
+    def_finddir_assembly
+    def_quant_expmx
+    def_ortho
       ;;
     *) #error
       printf "%s\n%s\n\n" "I did not understand your selection." \
@@ -60,4 +63,3 @@ _choosestep(){
 }
 
 _choosestep
-

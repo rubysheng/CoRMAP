@@ -1,0 +1,29 @@
+$MUGQIC_INSTALL_HOME/genomes/species/Homo_sapiens.GRCh37/
+|-- annotations/
+|    |-- gtf_tophat_index/
+|    |-- Homo_sapiens.GRCh37.dbSNP142.vcf.gz
+|    |-- Homo_sapiens.GRCh37.dbSNP142.vcf.gz.tbi
+|    |-- Homo_sapiens.GRCh37.Ensembl75.geneid2Symbol.tsv
+|    |-- Homo_sapiens.GRCh37.Ensembl75.genes.length.tsv
+|    |-- Homo_sapiens.GRCh37.Ensembl75.genes.tsv
+|    |-- Homo_sapiens.GRCh37.Ensembl75.GO.tsv
+|    |-- Homo_sapiens.GRCh37.Ensembl75.gtf
+|    |-- Homo_sapiens.GRCh37.Ensembl75.ncrna.fa
+|    |-- Homo_sapiens.GRCh37.Ensembl75.rrna.fa
+|    |-- Homo_sapiens.GRCh37.Ensembl75.transcript_id.gtf
+|    |-- Homo_sapiens.GRCh37.Ensembl75.vcf.gz
+|    |-- ncrna_bwa_index/
+|    |-- rrna_bwa_index/
+|-- downloads/
+|    |-- ftp.1000genomes.ebi.ac.uk/
+|    |-- ftp.ensembl.org/
+|    |-- ftp.ncbi.nih.gov/
+|-- genome/
+|    |-- bowtie2_index/
+|    |-- bwa_index/
+|    |-- Homo_sapiens.GRCh37.dict
+|    |-- Homo_sapiens.GRCh37.fa
+|    |-- Homo_sapiens.GRCh37.fa.fai
+|    |-- star_index/
+|-- Homo_sapiens.GRCh37.ini
+|-- log/

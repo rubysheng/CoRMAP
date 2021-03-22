@@ -230,45 +230,45 @@ $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_pfam allRD_TrinotatePFAM.out
 # head -4 {allRD_TrinotatePFAM.out,allRD_blastp_TRIN.outfmt6,allRD_blastx_TRIN.outfmt6,../RD_perg.gene_trans_map,../RD_perg.dnaseq.fasta,../allRD_perg.merge.transdecoder.pep}
 $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite report  > allRD_trinotate_annotation_report.xls
 
+####### Follow steps ##########
+
+    cat ../{RD_PRJNA252803.transdecoder.pep,RD_PRJNA316996.transdecoder.pep,RD_PRJNA529794.transdecoder.pep} > ../RD_perg.merge.transdecoder.pep
+
+    Combine to SQL
+    $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite init \
+      --gene_trans_map ../RD_perg.gene_trans_map \
+      --transcript_fasta  ../RD_perg.dnaseq.fasta \
+      --transdecoder_pep ../RD_perg.merge.transdecoder.pep
+
+    Loading BLAST homologies: Load transcript hits
+    blastx -query ../RD_perg.dnaseq.fasta -db swissprot_TRIN -num_threads 16 \
+        -max_target_seqs 5 -outfmt 6 -evalue 1e-3 > RD_blastx_TRIN.outfmt6
+    $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastx RD_blastx_TRIN.outfmt6
+
+    blastp -query ../RD_perg.pepseq.fasta \
+      -db swissprot_TRIN \
+      -num_threads 16 -max_target_seqs 1 -outfmt 6 -evalue 1e-3 > blastp_TRIN.outfmt6
+
+    # Search Transdecoder-predicted proteins
+    blastp -query ../RD_perg.merge.transdecoder.pep \
+      -db swissprot_TRIN \
+      -num_threads 16 -max_target_seqs 1 -outfmt 6 -evalue 1e-3 > blastp_TRIN.outfmt6
+
+    Run hmmscan
+    hmmscan --cpu 16 --domtblout TrinotatePFAM.out \
+      Pfam-A.hmm ../RD_perg.pepseq.fasta  > RD_pfam.log
+
+    Loading BLAST homologies: Load protein hits
+    $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastp blastp_TRIN.outfmt6
+    Load Pfam domain entries
+    $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_pfam TrinotatePFAM.out
+
+    # Run hmmscan
+    hmmscan --cpu 16 --domtblout TrinotatePFAM.out \
+      Pfam-A.hmm ../RD_perg.merge.transdecoder.pep  > RD_pfam.log
 
 
-  # cat ../{RD_PRJNA252803.transdecoder.pep,RD_PRJNA316996.transdecoder.pep,RD_PRJNA529794.transdecoder.pep} > ../RD_perg.merge.transdecoder.pep
 
-  # Combine to SQL
-  # $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite init \
-  #   --gene_trans_map ../RD_perg.gene_trans_map \
-  #   --transcript_fasta  ../RD_perg.dnaseq.fasta \
-  #   --transdecoder_pep ../RD_perg.merge.transdecoder.pep
+  head -4 {TrinotatePFAM.out,blastp_TRIN.outfmt6,blastx_TRIN.outfmt6,../RD_perg.gene_trans_map,../RD_perg.dnaseq.fasta,../RD_perg.merge.transdecoder.pep}
 
-  # Loading BLAST homologies: Load transcript hits
-  # blastx -query ../RD_perg.dnaseq.fasta -db swissprot_TRIN -num_threads 16 \
-  #     -max_target_seqs 5 -outfmt 6 -evalue 1e-3 > RD_blastx_TRIN.outfmt6
-  # $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastx RD_blastx_TRIN.outfmt6
-  #
-  # blastp -query ../RD_perg.pepseq.fasta \
-  #   -db swissprot_TRIN \
-  #   -num_threads 16 -max_target_seqs 1 -outfmt 6 -evalue 1e-3 > blastp_TRIN.outfmt6
-
-  # # Search Transdecoder-predicted proteins
-  # blastp -query ../RD_perg.merge.transdecoder.pep \
-  #   -db swissprot_TRIN \
-  #   -num_threads 16 -max_target_seqs 1 -outfmt 6 -evalue 1e-3 > blastp_TRIN.outfmt6
-
-  # Run hmmscan
-  # hmmscan --cpu 16 --domtblout TrinotatePFAM.out \
-  #   Pfam-A.hmm ../RD_perg.pepseq.fasta  > RD_pfam.log
-
-  # Loading BLAST homologies: Load protein hits
-  # $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastp blastp_TRIN.outfmt6
-  # Load Pfam domain entries
-  # $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_pfam TrinotatePFAM.out
-
-  # # Run hmmscan
-  # hmmscan --cpu 16 --domtblout TrinotatePFAM.out \
-  #   Pfam-A.hmm ../RD_perg.merge.transdecoder.pep  > RD_pfam.log
-
-
-
-# head -4 {TrinotatePFAM.out,blastp_TRIN.outfmt6,blastx_TRIN.outfmt6,../RD_perg.gene_trans_map,../RD_perg.dnaseq.fasta,../RD_perg.merge.transdecoder.pep}
-
-# $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite report  > RD_trinotate_annotation_report.xls
+  $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite report  > RD_trinotate_annotation_report.xls

@@ -2,6 +2,8 @@
 ####################################################################################################################
 ####################################################################################################################
 ##### orthomcl results summary ######
+##### Usage:
+#####   source /Users/ruby/Documents/MSc/MSc_thesis/RNA-seq/scripts/ortho_stat_finalversion.sh; ortho_extract_seq
 ####################################################################################################################
 ####################################################################################################################
 
@@ -25,9 +27,12 @@ function ortho_sum() {
     sp_name=${file%.fasta}
     bioawk -c fastx '{ print "HEADER|"$name }' ./input/$sp_name.fasta > ./analyze/orgin_${sp_name%_pep}.lst
     sed -i "s/HEADER/${sp_name}/g" ./analyze/orgin_${sp_name%_pep}.lst
-    cat ./output/groups/groups.txt | awk -v species="$sp_name" '{for(i=1; i<=NF; i++) if ($i ~ species) print $i}' > ./analyze/clustered_${sp_name%_pep}.lst
+    cat ./output/groups/groups.txt | awk -v species="$sp_name" '{for(i=1; i<=NF; i++) if ($i ~ species) print $i}' > clustered_lst.tmp
+    cat clustered_lst.tmp | sort | uniq > ./analyze/clustered_${sp_name%_pep}.lst
+    rm -v clustered_lst.tmp
     cat ./analyze/orgin_${sp_name%_pep}.lst ./analyze/clustered_${sp_name%_pep}.lst | sort | uniq -u > ./analyze/unclustered_${sp_name%_pep}.lst
   done
+
 
   echo
   echo "================================ End : ortho_sum() ================================"
@@ -364,7 +369,7 @@ function ortho_selected_sum() {
     sp_name=${file%.fasta}
     cat ./analyze/allsp_groups.txt | awk -v species="$sp_name" '{for(i=1; i<=NF; i++) if ($i ~ species) print $1, $i}'   > tmp.lst
     cut -d'|' -f2 tmp.lst > tmp.pepname
-    paste -d " " tmp.lst tmp.pepname > ./analyze/clustered_${sp_name%_pep}.lst
+    paste -d " " tmp.lst tmp.pepname | sort | uniq > ./analyze/clustered_${sp_name%_pep}.lst
     rm tmp.lst tmp.pepname
   done
 
@@ -383,10 +388,10 @@ function ortho_extract_seq() {
   echo "\
   ####################################################################################################################
   # ortho_extract_seq()
-  #   Returns two fasta files of peptides sequences and dna sequences
-  #   Input: './analyze/clustered_\${sp_name%_pep}.lst'
+  #   Returns two fasta files of all peptides sequences and all dna sequences for each dataset
+  #   Input: './input/*_pep.fasta'; './fasta_dir/\${file%_pep.fasta}_RSEM.fasta'; './analyze/clustered_\${sp_name%_pep}.lst'
   #   Require:
-  #   Output: './output/groups/groups.counts.txt'
+  #   Output: './analyze/\${sp_name%_pep}.pepseq.fasta'; './analyze/\${sp_name%_pep}.dnaseq.fasta'
   ####################################################################################################################"
 
   ## In the rodent_lst/ directory
@@ -418,25 +423,35 @@ function ortho_extract_seq() {
 
 # ortho_extract_seq
 
+function anno_rd_perp() {
+  echo
+  echo "================================ Start : anno_rd_perp() ================================"
+  echo "\
+  ####################################################################################################################
+  # anno_rd_perp()
+  #   Returns following files for annotation:
+  #     RD_perg.pepseq.fasta;
+  #         |-\${file%_pep.fasta}_RSEM.fasta.transdecoder.pep;
+  #             |-(RD_uniq_mergepepseq.fasta);
+  #     RD_perg.dnaseq.fasta;
+  #         |-RD_uniq_dnaseq.fasta;
+  #         |-(RD_perg.gene_trans_map);
+  #
+  #   Input: '\${PATH_TO_EXTERNAL_DRIVE}/data/\${file%_pep.fasta}/\${file%_pep.fasta}.fasta.transdecoder.pep';
+  #   Require: Load 'transdecoder.pep' file with full-named headers from each dataset to './input/'
+  #   Output: 'RD_perg.pepseq.fasta'; 'RD_perg.dnaseq.fasta'; '\${file%_pep.fasta}_RSEM.fasta.transdecoder.pep'; 'RD_uniq_mergepepseq.fasta'; 'RD_uniq_dnaseq.fast'; 'RD_perg.gene_trans_map'
+  ####################################################################################################################"
+
+  ## In the mus_1_3/ directory
 
 
+  echo
+  echo "================================ End : anno_rd_perp() ================================"
+  echo
 
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# anno_rd_perp
 
 
 

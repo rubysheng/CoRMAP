@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 while IFS= read -r line; do
   echo ${line} > 550g_pergroup_14.txt
   group_num=`awk '{print $1}' 550g_pergroup_14.txt`

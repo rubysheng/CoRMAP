@@ -1,0 +1,65 @@
+setwd("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/")
+# library(ggplot2)
+library(readxl)
+
+tag <- function(input_df, col_group,col_gene, col_t2) {
+  input_df[col_t2] <- paste(input_df[col_group],input_df[col_gene],input_df[col_t2],sep = "|")
+}
+
+files <- c("Bombina","PRJNA252803","PRJNA287145","PRJNA287152","PRJNA302146","PRJNA316996","PRJNA381689","PRJNA390522","PRJNA419677","PRJNA422916","PRJNA450614","PRJNA451011","PRJNA475804","PRJNA529794","PRJNA541005")
+
+TPM_output <- data.frame("project"=NULL,"Min."=NULL,"1st Qu."=NULL,"Median"=NULL,"Mean"=NULL,"3rd Qu."=NULL,"Max."=NULL,"IQR"=NULL,"stdev"=NULL)
+
+aveTPM_output <- data.frame("group_num"=NULL,"gene"=NULL,"treatment"=NULL,"TPM"=NULL,"species"=NULL,"project"=NULL,"common_name"=NULL,"study_type"=NULL,"study_design"=NULL,"learning_program"=NULL,"type_of_learning"=NULL,"type_of_memory"=NULL,"time_frame"=NULL,"stress"=NULL,"reward"=NULL,"time_point"=NULL)
+
+
+
+for (i in 1:length(files)){
+  project <- files[i]
+  file_path <- paste0("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/output/",project,"_mulgp_clugene_sty.xlsx")
+  input_df <- read_xlsx(file_path)
+  colnames(input_df)[c(5,10)] <- c("treatment","study_design")
+  input_df <- as.data.frame(input_df)
+  input_df$TPM_Value <- as.numeric(input_df$TPM_Value)
+  
+  # general TPM distribution stats
+  stats_info <- summary(input_df$TPM_Value)
+  stats_df <- data.frame("project"=project,t(matrix(stats_info)),IQR(input_df$TPM_Value),sd(input_df$TPM_Value))
+  colnames(stats_df)[-1]<- c("Min.","1st Qu.","Median","Mean","3rd Qu.","Max.","IQR","stdev")
+  TPM_output <- rbind(TPM_output,stats_df)
+  
+  # average TPM by treatment replicates
+  treatmnt <- data.frame(do.call('rbind', strsplit(as.character(input_df$treatment),'_rep',fixed=TRUE)))
+  input_df$treatment2 <- treatmnt$X1
+  input_df$treatment2 <- apply(input_df,1,tag,col_group="Group_Num", col_gene="gene",col_t2="treatment2")
+  pro_avgTPM_df <- aggregate(input_df[,"TPM_Value"], list(input_df$treatment2), mean)
+  pro_avgTPM_expdf <- data.frame(do.call('rbind', strsplit(as.character(pro_avgTPM_df$Group.1),'|',fixed=TRUE))) 
+  pro_avgTPM_expdf$TPM <- pro_avgTPM_df$x
+  colnames(pro_avgTPM_expdf)[1:3]<-c("group_num","gene","treatment")
+  df <-unique(input_df[,c(2,3,8,9,10,11,12,13,14,15,16,17)])
+  output_df <- cbind(pro_avgTPM_expdf, df[rep(seq_len(nrow(df)), each =  nrow(pro_avgTPM_expdf)), ])
+  rownames(output_df) <- 1:nrow(output_df)
+  colnames(output_df)[5:ncol(output_df)] <- c("species","project","common_name","study_type","study_design","learning_program","type_of_learning","type_of_memory","time_frame","stress","reward","time_point")
+  aveTPM_output <- rbind(aveTPM_output,output_df)
+}
+
+  
+  
+  
+  
+  
+  
+  
+TPM_output
+# aveTPM_output
+dim(TPM_output)
+dim(aveTPM_output)
+
+# save files
+write.csv(TPM_output,"~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/output/analysis/TPM_output.csv", row.names = FALSE)
+save(aveTPM_output, file = "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/output/analysis/aveTPM_output.RData")
+write.csv(aveTPM_output,"~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/output/analysis/aveTPM_output.csv", row.names = FALSE)
+
+
+
+

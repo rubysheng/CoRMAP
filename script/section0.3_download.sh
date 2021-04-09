@@ -2,9 +2,9 @@
 #title          :section0.3_download.sh
 #description    :download raw RNA-Seq data from SRA by links and store by dataset names
 #author         :Ruby(Yiru) Sheng
-#usage          :source ./script/section0.3_download.sh list_of_projectnames
+#usage          :source $CMRP_PATH/script/section0.3_download.sh list_of_projectnames
 #bash_version   :4.4.19(1)-release
-#============================================================================
+#=======================================================================================================================
 
 # check if exist folder ./download_input/
 if [[ ! -d "./download_input" ]]; then

@@ -2,9 +2,9 @@
 #title          :section0.2_checksoftware.sh
 #description    :check if all software packages are well installed.
 #author         :Ruby(Yiru) Sheng
-#usage          :source ./section1.2_checksoftware.sh
+#usage          :source $CMRP_PATH/section1.2_checksoftware.sh
 #bash_version   :4.4.19(1)-release
-#============================================================================
+#=======================================================================================================================
 
 # cd ${maindirectory}/applications
 #

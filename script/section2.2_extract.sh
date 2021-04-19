@@ -472,7 +472,7 @@ function main() {
       file=`basename $file`
       file=${file%_pep.fasta}"_RSEM.fasta"
       echo ${file}
-      find $path_to_external_drive/Seagate_Backup_Plus_Drive/ruby/data/ -name ${file} -exec cp -v {} fasta_dir/ \;
+      find $CMRP_PATH/sample/data/ -name ${file} -exec cp -v {} fasta_dir/ \;
     done
   fi
 

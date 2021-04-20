@@ -465,8 +465,6 @@ function anno_rd_perp() {
 function main() {
   path_to_data=$1
 
-  mkdir ./analyze/
-
   # check if the fasta files prepared
   if [ ! -d fasta_dir/ ]; then
     mkdir fasta_dir
@@ -500,6 +498,11 @@ function main() {
   # cd ./analyze/per_group
   # source /media/lewis/New_Seagate_Drive_8TB/ruby/github/bombina/comparative-transcriptomic-analysis-pip/script/ortho_check.sh
   # cd ../..
+
+  # step5
+  ortho_selected_stat
+  ortho_selected_sum
+  ortho_extract_seq
 }
 
 if [ "${1}" != "--source-only" ]; then

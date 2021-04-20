@@ -6,6 +6,8 @@
 #bash_version   :4.4.19(1)-release
 #=======================================================================================================================
 
+mkdir ./analyze/
+touch -v ./analyze/groups.counts.txt
 
 cat output/groups/groups.txt | \
 awk 'BEGIN {print "GROUP_NUM", "PRJNA111111", "PRJNA222222", "PRJNA333333", "PRJNA444444", "PRJNA555555", "PRJNA666666"}

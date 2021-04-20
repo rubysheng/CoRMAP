@@ -477,22 +477,53 @@ function main() {
   fi
 
   # step1
-  #sudo chmod 777 output/groups/*
-  ortho_sum 2>&1 | tee ortho_sum.log
-  ortho_stat 2>&1 | tee ortho_stat.log
+  #sudo chmod 777 output/groups/groups.txt
+  GROUPS=output/groups/groups.txt
+  if [[ -f "$GROUPS" ]]; then
+    echo "$GROUPS exists."
+    ortho_sum 2>&1 | tee ortho_sum.log
+  fi
 
-  mkdir -v ./analyze/stat/
-  mv -v ./analyze/groups.counts.txt ./analyze/stat/groups.counts.stat
-  mv -v ./analyze/cluster.stat ./analyze/stat/cluster.stat
+  for file in `ls -1 ./input/*_pep.fasta`; do
+    file=`basename $file`
+    sp_name=${file%_pep.fasta}
+    LST=analyze/orgin_${sp_name%_pep}.lst
+    if [[ -f "$LST" ]]; then
+      echo "$LST exists."
+      let i=i+1
+    fi
+  done
+  file_count=`ls -1 ./input/*_pep.fasta | wc -l`
+  if [[ "$i" -eq "$file_count" ]] && [[ -f "$GROUPS" ]]; then
+    ortho_stat 2>&1 | tee ortho_stat.log
+  fi
+
+  FILE1=output/groups/groups.counts.txt
+  FILE2=analyze/cluster.stat
+  if [[ -f "$FILE1" ]] && [[ -f "$FILE2" ]]; then
+    echo "$FILE1 and $FILE2 exists."
+    mkdir -v ./analyze/stat/
+    mv -v ./analyze/groups.counts.txt ./analyze/stat/groups.counts.stat
+    mv -v ./analyze/cluster.stat ./analyze/stat/cluster.stat
+  fi
 
   # ortho_dnasum
   # ortho_dnastat
 
   # step2
-  ortho_allsp_g 2>&1 | tee ortho_allsp_g.log
+  FILE=analyze/stat/groups.counts.stat
+  if [[ -f "$FILE" ]] && [[ -f "$GROUPS" ]]; then
+    echo "$FILE exists."
+    ortho_allsp_g 2>&1 | tee ortho_allsp_g.log
+  fi
 
   # step3
-  ortho_perg_seq 2>&1 | tee ortho_perg_seq.log
+  # FILE=
+  # if [[ -f "$FILE" ]]; then
+  #   echo "$FILE exists."
+  #
+  # fi
+  # ortho_perg_seq 2>&1 | tee ortho_perg_seq.log
 
   # step4
   # cd ./analyze/per_group
@@ -500,9 +531,24 @@ function main() {
   # cd ../..
 
   # step5
-  ortho_selected_stat 2>&1 | tee ortho_selected_stat.log
-  ortho_selected_sum 2>&1 | tee ortho_selected_sum.log
-  ortho_extract_seq 2>&1 | tee ortho_extract_seq.log
+  # FILE=
+  # if [[ -f "$GROUPS" ]]; then
+  #   echo "$GROUPS exists."
+  #   ortho_selected_stat 2>&1 | tee ortho_selected_stat.log
+  # fi
+  # 
+  # FILE=
+  # if [[ -f "$FILE" ]]; then
+  #   echo "$FILE exists."
+  #   ortho_selected_sum 2>&1 | tee ortho_selected_sum.log
+  # fi
+  #
+  # FILE=
+  # if [[ -f "$FILE" ]]; then
+  #   echo "$FILE exists."
+  #   ortho_extract_seq 2>&1 | tee ortho_extract_seq.log
+  # fi
+
 }
 
 if [ "${1}" != "--source-only" ]; then

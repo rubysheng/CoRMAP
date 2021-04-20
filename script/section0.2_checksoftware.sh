@@ -178,6 +178,16 @@
 # ####################  VERSION LOG  #############################
 # # /home/lewis/miniconda3/bin/update_blastdb.pl version 581818
 # ################################################################
+#
+#
+# # 8. "bioawk"
+#
+# # Description: extraction
+#
+# # Guidience to install:
+# # use Miniconda3 to install
+# conda install -c bioconda bioawk
+
 
 
 

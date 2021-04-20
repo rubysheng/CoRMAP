@@ -2,7 +2,8 @@
 #title          :section2.2_extract.sh
 #description    :This script is to extract and calculate the results after ortholog searching
 #author         :Ruby(Yiru) Sheng
-#usage          :source $CMRP_PATH/script/section2.2_extract.sh
+#usage          : 1. source $CMRP_PATH/script/section2.2_extract.sh
+#                 2. source /media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/script/section2.2_extract.sh --source-only | ortho_perg_seq 2>&1 | tee ortho_perg_seq.log
 #bash_version   :4.4.19(1)-release
 #=======================================================================================================================
 
@@ -261,7 +262,7 @@ function ortho_perg_seq() {
   ####################################################################################################################
   # ortho_perg_seq()
   #
-  #   Input: ''
+  #   Input: 'analyze/allsp_groups.txt'
   #   Require: have had a folder under the current directory- './analyze/stat/'
   #   Output: './analyze/per_group/'
   ####################################################################################################################"
@@ -284,7 +285,7 @@ function ortho_perg_seq() {
 
     while IFS= read -r line; do
       trimmed=`echo $line | cut -d'|' -f 2`
-      awk -v pat="$trimmed" '{ if ($0 ~ pat) {print; getline; print;} }' ../../input/* >> 10g_pergroup.pepseq.fasta
+      awk -v pat="$trimmed" '{ if ($0 ~ pat) {print; getline; print;} }' ../../input/*_pep.fasta >> 10g_pergroup.pepseq.fasta
     done < 10g_pergroup.pepname
 
     output="allsp_"$group_num".pepseq.fasta"
@@ -305,89 +306,89 @@ function ortho_perg_seq() {
 ######################################################################################################################
 ######################################################################################################################
 
-function ortho_selected_stat() {
-  echo
-  echo "================================ Start : ortho_selected_stat() ================================"
-  echo "\
-  ####################################################################################################################
-  # ortho_selected_stat()
-  #   Returns some stats : (run mannually) a table counting peptides from each project in each group, then pick up specific projects by columns from the table, finally filter the groups containing at least one seq from each selected group
-  #   Input: './output/groups/groups.txt'
-  #   Require: mannually run with 'output_dir_groups_counts-generator.sh'
-  #   Output: './output/groups/groups.counts.txt'
-  ####################################################################################################################"
+# function ortho_selected_stat() {
+#   echo
+#   echo "================================ Start : ortho_selected_stat() ================================"
+#   echo "\
+#   ####################################################################################################################
+#   # ortho_selected_stat()
+#   #   Returns some stats : (run mannually) a table counting peptides from each project in each group, then pick up specific projects by columns from the table, finally filter the groups containing at least one seq from each selected group
+#   #   Input: './analyze/allsp_groups.txt'
+#   #   Require: mannually run with 'output_dir_groups_counts-generator.sh'
+#   #   Output: './output/groups/groups.counts.txt'
+#   ####################################################################################################################"
+#
+#   ## In the rodent_lst/ directory
+#
+#   echo "Path : "$(pwd)
+#   file=`basename $(pwd)`
+#   echo "Taxonomy Group Name : "${file%_lst}
+#   echo
+#
+#   # source output_dir_groups_counts-generator.sh
+#
+#   cd ./analyze/stat/
+#   ## Run mannually with the following code block by change the numbers of columns
+#   # cat groups.counts.stat | cut -d' ' -f 1,4,5,6 > mus_13.groups.counts.stat
+#   mv mus_13.groups.counts.stat ../../../mus_1_3/analyze/stat/groups.counts.stat
+#
+#   ## Go to the new subset folder
+#   cd ../../../mus_1_3/analyze/stat/
+#   echo `head -1 groups.counts.stat` SUM > allsp_g.counts.stat
+#   awk '{for(i=2;i<=NF;i++){if($i+0 < 1) next}} 1' groups.counts.stat | awk '{sum=0; for (i=2; i<=NF; i++) { sum+= $i } print $0,sum}' >> allsp_g.counts.stat
+#
+#   ## Use the group numbers to find the lines containing peptides headers in 'groups.txt'
+#   awk '{ for(i=2;i<=NF;i++) { if($i+0 < 1) next }} 1' groups.counts.stat | awk '{ print $1 }' > tmp.allsp_g.lst
+#   while IFS= read -r line; do
+#     awk -v pat="$line" '{ if ($0 ~ pat) {print} }' ../../output/groups/groups.txt >> ../allsp_groups.txt
+#   done < tmp.allsp_g.lst
+#   rm tmp.allsp_g.lst
+#
+#   ## Return to mus_1_3/
+#   cd ../../
+#
+#   echo
+#   echo "================================ End : ortho_selected_stat() ================================"
+#   echo
+#
+# }
 
-  ## In the rodent_lst/ directory
-
-  echo "Path : "$(pwd)
-  file=`basename $(pwd)`
-  echo "Taxonomy Group Name : "${file%_lst}
-  echo
-
-  # source output_dir_groups_counts-generator.sh
-
-  cd ./analyze/stat/
-  ## Run mannually with the following code block by change the numbers of columns
-  # cat groups.counts.stat | cut -d' ' -f 1,4,5,6 > mus_13.groups.counts.stat
-  mv mus_13.groups.counts.stat ../../../mus_1_3/analyze/stat/groups.counts.stat
-
-  ## Go to the new subset folder
-  cd ../../../mus_1_3/analyze/stat/
-  echo `head -1 groups.counts.stat` SUM > allsp_g.counts.stat
-  awk '{for(i=2;i<=NF;i++){if($i+0 < 1) next}} 1' groups.counts.stat | awk '{sum=0; for (i=2; i<=NF; i++) { sum+= $i } print $0,sum}' >> allsp_g.counts.stat
-
-  ## Use the group numbers to find the lines containing peptides headers in 'groups.txt'
-  awk '{ for(i=2;i<=NF;i++) { if($i+0 < 1) next }} 1' groups.counts.stat | awk '{ print $1 }' > tmp.allsp_g.lst
-  while IFS= read -r line; do
-    awk -v pat="$line" '{ if ($0 ~ pat) {print} }' ../../output/groups/groups.txt >> ../allsp_groups.txt
-  done < tmp.allsp_g.lst
-  rm tmp.allsp_g.lst
-
-  ## Return to mus_1_3/
-  cd ../../
-
-  echo
-  echo "================================ End : ortho_selected_stat() ================================"
-  echo
-
-}
-
-function ortho_selected_sum() {
-  echo
-  echo "================================ Start : ortho_selected_sum() ================================"
-  echo "\
-  ####################################################################################################################
-  # ortho_selected_sum()
-  #   For those selected projects, after obtain the list of all clustered peptides' group number, header in 'allsp_groups.txt', and pepname for each selected project used in this orthomcl searching.
-  #   Input: './analyze/allsp_groups.txt'; './input/*_pep.fasta'
-  #   Require: have had a folder under the current directory- './analyze'
-  #   Output: './analyze/clustered_\${sp_name%_pep}.lst'
-  ####################################################################################################################
-
-  # [Modify] in the mus_1_3/ directory
-  # mkdir input
-  # mv -v ../rodent_lst/input/PRJNA252803_pep.fasta ./input
-  # mv -v ../rodent_lst/input/PRJNA529794_pep.fasta ./input"
-
-
-  # study_lst=`ls -1 ./input/*_pep.fasta`
-  for line in `ls -1 ./input/*_pep.fasta`; do
-    file=`basename $line`
-    sp_name=${file%.fasta}
-    cat ./analyze/allsp_groups.txt | awk -v species="$sp_name" '{for(i=1; i<=NF; i++) if ($i ~ species) print $1, $i}'   > tmp.lst
-    cut -d'|' -f2 tmp.lst > tmp.pepname
-    paste -d " " tmp.lst tmp.pepname | sort | uniq > ./analyze/clustered_${sp_name%_pep}.lst
-    rm tmp.lst tmp.pepname
-  done
-
-  echo
-  echo "================================ End : ortho_selected_sum() ================================"
-  echo
-
-
-}
-
-# ortho_selected_sum
+# function ortho_selected_sum() {
+#   echo
+#   echo "================================ Start : ortho_selected_sum() ================================"
+#   echo "\
+#   ####################################################################################################################
+#   # ortho_selected_sum()
+#   #   For those selected projects, after obtain the list of all clustered peptides' group number, header in 'allsp_groups.txt', and pepname for each selected project used in this orthomcl searching.
+#   #   Input: './analyze/allsp_groups.txt'; './input/*_pep.fasta'
+#   #   Require: have had a folder under the current directory- './analyze'
+#   #   Output: './analyze/clustered_\${sp_name%_pep}.lst'
+#   ####################################################################################################################
+#
+#   # [Modify] in the mus_1_3/ directory
+#   # mkdir input
+#   # mv -v ../rodent_lst/input/PRJNA252803_pep.fasta ./input
+#   # mv -v ../rodent_lst/input/PRJNA529794_pep.fasta ./input"
+#
+#
+#   # study_lst=`ls -1 ./input/*_pep.fasta`
+#   for line in `ls -1 ./input/*_pep.fasta`; do
+#     file=`basename $line`
+#     sp_name=${file%.fasta}
+#     cat ./analyze/allsp_groups.txt | awk -v species="$sp_name" '{for(i=1; i<=NF; i++) if ($i ~ species) print $1, $i}'   > tmp.lst
+#     cut -d'|' -f2 tmp.lst > tmp.pepname
+#     paste -d " " tmp.lst tmp.pepname | sort | uniq > ./analyze/clustered_${sp_name%_pep}.lst
+#     rm tmp.lst tmp.pepname
+#   done
+#
+#   echo
+#   echo "================================ End : ortho_selected_sum() ================================"
+#   echo
+#
+#
+# }
+#
+# # ortho_selected_sum
 
 function ortho_extract_seq() {
   echo

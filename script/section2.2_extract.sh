@@ -58,7 +58,7 @@ function ortho_stat() {
   #                        2. (run mannually) a table counting peptides from each project in each group
   #                        3. a table of unclustered/clustered peptides sequences for each project
   #   Input: './output/groups/groups.txt'; './input/*_pep.fasta'; './analyze/orgin_\${sp_name%_pep}.lst'; './analyze/clustered_\${sp_name%_pep}.lst'; './analyze/unclustered_\${sp_name%_pep}.lst'
-  #   Require: mannually run with 'output_dir_groups_counts-generator.sh'
+  #   Require: mannually run with 'section2.2.1_counts-generator.sh'
   #   Output: './output/groups/groups.counts.txt', './analyze/cluster.stat'
   ####################################################################################################################"
 

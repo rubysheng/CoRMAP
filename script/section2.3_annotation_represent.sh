@@ -1,8 +1,8 @@
 #!/bin/bash
-#title          :section2.3_annotationdb.sh
+#title          :section2.3_annotation_represent.sh
 #description    :Generate the local database for annotation.
 #author         :Ruby(Yiru) Sheng
-#usage          :source $CMRP_PATH/script/section2.3_annotationdb.sh
+#usage          :source $CMRP_PATH/script/section2.3_annotation_represent.sh
 #bash_version   :4.4.19(1)-release
 #=======================================================================================================================
 

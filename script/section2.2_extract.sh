@@ -463,6 +463,8 @@ function anno_rd_perp() {
 
 
 function main() {
+  path_to_data=$1
+
   mkdir ./analyze/
 
   # check if the fasta files prepared
@@ -472,27 +474,27 @@ function main() {
       file=`basename $file`
       file=${file%_pep.fasta}"_RSEM.fasta"
       echo ${file}
-      find $CMRP_PATH/sample/data/ -name ${file} -exec cp -v {} fasta_dir/ \;
+      find ${path_to_data} -name ${file} -exec cp -v {} fasta_dir/ \;
     done
   fi
 
   # step1
   #sudo chmod 777 output/groups/*
-  #ortho_sum 2>&1 | tee ortho_sum.log
-  #ortho_stat 2>&1 | tee ortho_stat.log
+  ortho_sum 2>&1 | tee ortho_sum.log
+  ortho_stat 2>&1 | tee ortho_stat.log
 
-  #mkdir ./analyze/stat/
-  # mv ./analyze/groups.counts.txt ./analyze/stat/groups.counts.stat
-  # mv ./analyze/cluster.stat ./analyze/stat/cluster.stat
+  mkdir ./analyze/stat/
+  mv ./analyze/groups.counts.txt ./analyze/stat/groups.counts.stat
+  mv ./analyze/cluster.stat ./analyze/stat/cluster.stat
 
   # ortho_dnasum
   # ortho_dnastat
 
   # step2
-  # ortho_allsp_g
+  ortho_allsp_g 2>&1 | tee ortho_allsp_g.log
 
   # step3
-  #ortho_perg_seq
+  ortho_perg_seq 2>&1 | tee ortho_perg_seq.log
 
   # step4
   # cd ./analyze/per_group
@@ -500,6 +502,6 @@ function main() {
   # cd ../..
 }
 
-# if [ "${1}" != "--source-only" ]; then
-#     main "${@}"
-# fi
+if [ "${1}" != "--source-only" ]; then
+    main "${@}"
+fi

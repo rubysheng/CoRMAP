@@ -478,9 +478,9 @@ function main() {
 
   # step1
   #sudo chmod 777 output/groups/groups.txt
-  GROUPS=output/groups/groups.txt
-  if [[ -f "$GROUPS" ]]; then
-    echo "$GROUPS exists."
+  GP_FILE=output/GP_FILE/GP_FILE.txt
+  if [[ -e "$GP_FILE" ]]; then
+    echo "$GP_FILE exists."
     ortho_sum 2>&1 | tee ortho_sum.log
   fi
 
@@ -488,22 +488,22 @@ function main() {
     file=`basename $file`
     sp_name=${file%_pep.fasta}
     LST=analyze/orgin_${sp_name%_pep}.lst
-    if [[ -f "$LST" ]]; then
+    if [[ -e "$LST" ]]; then
       echo "$LST exists."
       let i=i+1
     fi
   done
   file_count=`ls -1 ./input/*_pep.fasta | wc -l`
-  if [[ "$i" -eq "$file_count" ]] && [[ -f "$GROUPS" ]]; then
+  if [[ "$i" -eq "$file_count" ]] && [[ -e "$GP_FILE" ]]; then
     ortho_stat 2>&1 | tee ortho_stat.log
   fi
 
-  FILE1=output/groups/groups.counts.txt
+  FILE1=output/GP_FILE/GP_FILE.counts.txt
   FILE2=analyze/cluster.stat
-  if [[ -f "$FILE1" ]] && [[ -f "$FILE2" ]]; then
+  if [[ -e "$FILE1" ]] && [[ -e "$FILE2" ]]; then
     echo "$FILE1 and $FILE2 exists."
     mkdir -v ./analyze/stat/
-    mv -v ./analyze/groups.counts.txt ./analyze/stat/groups.counts.stat
+    mv -v ./analyze/GP_FILE.counts.txt ./analyze/stat/GP_FILE.counts.stat
     mv -v ./analyze/cluster.stat ./analyze/stat/cluster.stat
   fi
 
@@ -511,15 +511,15 @@ function main() {
   # ortho_dnastat
 
   # step2
-  FILE=analyze/stat/groups.counts.stat
-  if [[ -f "$FILE" ]] && [[ -f "$GROUPS" ]]; then
+  FILE=analyze/stat/GP_FILE.counts.stat
+  if [[ -e "$FILE" ]] && [[ -e "$GP_FILE" ]]; then
     echo "$FILE exists."
     ortho_allsp_g 2>&1 | tee ortho_allsp_g.log
   fi
 
   # step3
   # FILE=
-  # if [[ -f "$FILE" ]]; then
+  # if [[ -e "$FILE" ]]; then
   #   echo "$FILE exists."
   #
   # fi
@@ -532,19 +532,19 @@ function main() {
 
   # step5
   # FILE=
-  # if [[ -f "$GROUPS" ]]; then
-  #   echo "$GROUPS exists."
+  # if [[ -e "$GP_FILE" ]]; then
+  #   echo "$GP_FILE exists."
   #   ortho_selected_stat 2>&1 | tee ortho_selected_stat.log
   # fi
-  # 
+  #
   # FILE=
-  # if [[ -f "$FILE" ]]; then
+  # if [[ -e "$FILE" ]]; then
   #   echo "$FILE exists."
   #   ortho_selected_sum 2>&1 | tee ortho_selected_sum.log
   # fi
   #
   # FILE=
-  # if [[ -f "$FILE" ]]; then
+  # if [[ -e "$FILE" ]]; then
   #   echo "$FILE exists."
   #   ortho_extract_seq 2>&1 | tee ortho_extract_seq.log
   # fi

@@ -481,9 +481,9 @@ function main() {
   ortho_sum 2>&1 | tee ortho_sum.log
   ortho_stat 2>&1 | tee ortho_stat.log
 
-  mkdir ./analyze/stat/
-  mv ./analyze/groups.counts.txt ./analyze/stat/groups.counts.stat
-  mv ./analyze/cluster.stat ./analyze/stat/cluster.stat
+  mkdir -v ./analyze/stat/
+  mv -v ./analyze/groups.counts.txt ./analyze/stat/groups.counts.stat
+  mv -v ./analyze/cluster.stat ./analyze/stat/cluster.stat
 
   # ortho_dnasum
   # ortho_dnastat
@@ -500,9 +500,9 @@ function main() {
   # cd ../..
 
   # step5
-  ortho_selected_stat
-  ortho_selected_sum
-  ortho_extract_seq
+  ortho_selected_stat 2>&1 | tee ortho_selected_stat.log
+  ortho_selected_sum 2>&1 | tee ortho_selected_sum.log
+  ortho_extract_seq 2>&1 | tee ortho_extract_seq.log
 }
 
 if [ "${1}" != "--source-only" ]; then

@@ -442,7 +442,7 @@ function anno_rd_perp() {
   #         |-\${file%_pep.fasta}_RSEM.fasta.transdecoder.pep;
   #             |-(RD_uniq_mergepepseq.fasta);
   #     RD_perg.dnaseq.fasta;
-  #         |-RD_uniq_dnaseq.fasta;
+  #         |- RD_uniq_dnaseq.fasta;
   #         |-(RD_perg.gene_trans_map);
   #
   #   Input: '\${PATH_TO_EXTERNAL_DRIVE}/data/\${file%_pep.fasta}/\${file%_pep.fasta}.fasta.transdecoder.pep';

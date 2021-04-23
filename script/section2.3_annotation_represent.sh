@@ -11,7 +11,7 @@
 ##############
 
 ## we are in ${MAIN}/annotation/
-
+mkdir annotation/
 ## only gene annotation not include protein prediction
 
 ## obtain annotation databases by Trinotate

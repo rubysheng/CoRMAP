@@ -482,7 +482,7 @@ function anno_rd_perp() {
   echo
   echo "=== Strat changing headers ==="
   echo
-  for file in `ls -1 ./input/*_pep.fasta`; do
+  for file in `ls -1 ../input/*_pep.fasta`; do
     file=`basename $file`
     sp_name=${file%_pep.fasta}
     echo "========================================================================="

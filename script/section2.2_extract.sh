@@ -33,6 +33,7 @@ function ortho_sum() {
   for file in `ls -1 ./input/*_pep.fasta`; do
     file=`basename $file`
     sp_name=${file%.fasta}
+
     bioawk -c fastx '{ print "HEADER|"$name }' ./input/$sp_name.fasta > ./analyze/orgin_${sp_name%_pep}.lst
     sed -i "s/HEADER/${sp_name}/g" ./analyze/orgin_${sp_name%_pep}.lst
     cat ./output/groups/groups.txt | awk -v species="$sp_name" '{for(i=1; i<=NF; i++) if ($i ~ species) print $i}' > clustered_lst.tmp
@@ -353,42 +354,39 @@ function ortho_perg_seq() {
 #
 # }
 
-# function ortho_selected_sum() {
-#   echo
-#   echo "================================ Start : ortho_selected_sum() ================================"
-#   echo "\
-#   ####################################################################################################################
-#   # ortho_selected_sum()
-#   #   For those selected projects, after obtain the list of all clustered peptides' group number, header in 'allsp_groups.txt', and pepname for each selected project used in this orthomcl searching.
-#   #   Input: './analyze/allsp_groups.txt'; './input/*_pep.fasta'
-#   #   Require: have had a folder under the current directory- './analyze'
-#   #   Output: './analyze/clustered_\${sp_name%_pep}.lst'
-#   ####################################################################################################################
-#
-#   # [Modify] in the mus_1_3/ directory
-#   # mkdir input
-#   # mv -v ../rodent_lst/input/PRJNA252803_pep.fasta ./input
-#   # mv -v ../rodent_lst/input/PRJNA529794_pep.fasta ./input"
-#
-#
-#   # study_lst=`ls -1 ./input/*_pep.fasta`
-#   for line in `ls -1 ./input/*_pep.fasta`; do
-#     file=`basename $line`
-#     sp_name=${file%.fasta}
-#     cat ./analyze/allsp_groups.txt | awk -v species="$sp_name" '{for(i=1; i<=NF; i++) if ($i ~ species) print $1, $i}'   > tmp.lst
-#     cut -d'|' -f2 tmp.lst > tmp.pepname
-#     paste -d " " tmp.lst tmp.pepname | sort | uniq > ./analyze/clustered_${sp_name%_pep}.lst
-#     rm tmp.lst tmp.pepname
-#   done
-#
-#   echo
-#   echo "================================ End : ortho_selected_sum() ================================"
-#   echo
-#
-#
-# }
-#
-# # ortho_selected_sum
+function ortho_selected_sum() {
+  echo
+  echo "================================ Start : ortho_selected_sum() ================================"
+  echo "\
+  ####################################################################################################################
+  # ortho_selected_sum()
+  #   For those selected projects, after obtain the list of all clustered peptides' group number, header in 'allsp_groups.txt', and pepname for each selected project used in this orthomcl searching.
+  #   Input: './analyze/allsp_groups.txt'; './input/*_pep.fasta'
+  #   Require: have had a folder under the current directory- './analyze'
+  #   Output: './analyze/clustered_\${sp_name%_pep}.lst'
+  ####################################################################################################################"
+
+  #in the *_lst/ directory
+  
+  study_lst=`ls -1 ./input/*_pep.fasta`
+  for line in `ls -1 ./input/*_pep.fasta`; do
+    file=`basename $line`
+    sp_name=${file%.fasta}
+
+    cat ./analyze/allsp_groups.txt | awk -v species="$sp_name" '{for(i=1; i<=NF; i++) if ($i ~ species) print $1, $i}'   > tmp.lst
+    cut -d'|' -f2 tmp.lst > tmp.pepname
+    paste -d " " tmp.lst tmp.pepname | sort | uniq > ./analyze/clustered_${sp_name%_pep}.lst
+    rm tmp.lst tmp.pepname
+  done
+
+  echo
+  echo "================================ End : ortho_selected_sum() ================================"
+  echo
+
+
+}
+
+# ortho_selected_sum
 
 function ortho_extract_seq() {
   echo

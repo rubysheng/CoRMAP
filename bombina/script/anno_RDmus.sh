@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+#in the rodent_lst/ directory
 sed -i 's/[.]/_/g' ../RD_perg.dnaseq.fasta
 sed -i 's/[.]/_/g' ../RD_perg.pepseq.fasta
 

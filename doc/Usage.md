@@ -125,7 +125,6 @@ Follow the manual of Orthomcl-pipeline. In this tool, all-versus-all Blast searc
 [Back to top](#usage-the-cmrp)
 
 ### Integrate across taxonomy groups
-
 The output of orthomcl-pipeline search would be a list of groups including the orthologous protein sequence headers, which are used to extract corresponding protein sequences, transcript sequences, quantification numbers and gene mapping information for further analysis.
 
 Under the same Taxonomy-level directory mentioned at previous section, run the extraction step.
@@ -159,6 +158,11 @@ source $CMRP_PATH/script/section2.3_annotation_represent.sh 2>&1 | tee annotatio
 [Back to top](#usage-the-cmrp)
 
 ### Compare expression of orthologous groups
+
+Obtatin Trinotate report examople by using the following commandline.
+```SHELL
+tar -zxvf $CMRP_PATH/sample/orthologs/annotation/anno_output/allRD_trinotate_annotation_report.xls.tar.gz
+```
 
 Run with the following R scripts to help analyze the data generate final tables.
 - convert_to_longtb.R

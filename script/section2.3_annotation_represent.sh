@@ -29,9 +29,9 @@ function load_annodb() {
   cd anno_output
 
   ## obtain annotation databases by Trinotate
-  $TRINOTATE_HOME/admin/Build_Trinotate_Boilerplate_SQLite_db.pl  Ruby_transpip
+  $TRINOTATE_HOME/admin/Build_Trinotate_Boilerplate_SQLite_db.pl  CMRP_transpip
   ## Output:
-  ##     $CMRP_PATH/sample/orthologs/annotation/anno_output/Ruby_transpip.sqlite
+  ##     $CMRP_PATH/sample/orthologs/annotation/anno_output/CMRP_transpip.sqlite
   ##     $CMRP_PATH/sample/orthologs/annotation/anno_output/uniprot_sprot.pep
   ##     $CMRP_PATH/sample/orthologs/annotation/anno_output/Pfam-A.hmm.gz
 
@@ -55,7 +55,7 @@ function load_annodb() {
   #### Uncompress and prepare the Pfam database for use with 'hmmscan' like so:
   gunzip Pfam-A.hmm.gz
   hmmpress Pfam-A.hmm
-  
+
   # back to rodent_lst/
   cd ../..
 }
@@ -65,20 +65,20 @@ function load_annodb() {
 function annotation () {
   # in the rodent_lst/annotation/anno_output
   cd annotation/anno_output
-  $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite init \
+  $TRINOTATE_HOME/Trinotate CMRP_transpip.sqlite init \
       --gene_trans_map ../RD_perg.gene_trans_map \
       --transcript_fasta  ../RD_uniq_dnaseq.fasta \
       --transdecoder_pep ../RD_uniq_mergepepseq.fasta
   blastx -query ../RD_uniq_dnaseq.fasta -db swissprot_TRIN -num_threads 14 \
       -max_target_seqs 5 -outfmt 6 -evalue 1e-3 > allRD_blastx_TRIN.outfmt6
-  $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastx allRD_blastx_TRIN.outfmt6
+  $TRINOTATE_HOME/Trinotate CMRP_transpip.sqlite LOAD_swissprot_blastx allRD_blastx_TRIN.outfmt6
   blastp -query ../RD_uniq_mergepepseq.fasta -db swissprot_TRIN  -num_threads 16 \
       -max_target_seqs 1 -outfmt 6 -evalue 1e-3 > allRD_blastp_TRIN.outfmt6
   hmmscan --cpu 16 --domtblout allRD_TrinotatePFAM.out \
     Pfam-A.hmm ../RD_uniq_mergepepseq.fasta > allRD_pfam.log
-  $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastp allRD_blastp_TRIN.outfmt6
-  $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_pfam allRD_TrinotatePFAM.out
-  $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite report  > allRD_trinotate_annotation_report.xls
+  $TRINOTATE_HOME/Trinotate CMRP_transpip.sqlite LOAD_swissprot_blastp allRD_blastp_TRIN.outfmt6
+  $TRINOTATE_HOME/Trinotate CMRP_transpip.sqlite LOAD_pfam allRD_TrinotatePFAM.out
+  $TRINOTATE_HOME/Trinotate CMRP_transpip.sqlite report  > allRD_trinotate_annotation_report.xls
 }
 
 function main() {

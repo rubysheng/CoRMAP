@@ -1,0 +1,49 @@
+
+================================ Start : anno_rd_perp() ================================
+  ####################################################################################################################
+  # anno_rd_perp()
+  #   Returns following files for annotation:
+  #     RD_perg.pepseq.fasta;
+  #         |-${file%_pep.fasta}_RSEM.fasta.transdecoder.pep;
+  #             |-(RD_uniq_mergepepseq.fasta);
+  #     RD_perg.dnaseq.fasta;
+  #         |- RD_uniq_dnaseq.fasta;
+  #         |-(RD_perg.gene_trans_map);
+  #
+  #   Input: '${PATH_TO_EXTERNAL_DRIVE}/data/${file%_pep.fasta}/${file%_pep.fasta}.fasta.transdecoder.pep';
+  #   Require: Load 'transdecoder.pep' file with full-named headers from each dataset to './input/'
+  #   Output: 'RD_perg.pepseq.fasta'; 'RD_perg.dnaseq.fasta'; '${file%_pep.fasta}_RSEM.fasta.transdecoder.pep'; 'RD_uniq_mergepepseq.fasta'; 'RD_uniq_dnaseq.fast'; 'RD_perg.gene_trans_map'
+  ####################################################################################################################
+=========================================================================
+Adding PRJNA252803's DNA sequences and peptides sequences to RD_perg.dnaseq.fasta and RD_perg.pepseq.fasta respectively in the annotation folder
+PRJNA252803 is end with processing of merging.
+=========================================================================
+=========================================================================
+Adding PRJNA529794's DNA sequences and peptides sequences to RD_perg.dnaseq.fasta and RD_perg.pepseq.fasta respectively in the annotation folder
+PRJNA529794 is end with processing of merging.
+=========================================================================
+
+=== Strat processing RD_perg.dnaseq.fasta and RD_perg.pepseq.fasta ===
+
+
+=== Removing redundancy ===
+
+rm: cannot remove 'RD_uniq_dnaseq.fasta': No such file or directory
+rm: cannot remove 'RD_uniq_pepseq.fasta': No such file or directory
+
+=== Strat changing headers ===
+
+=========================================================================
+PRJNA252803 is changing headers.
+PRJNA252803 is end with changing headers.
+=========================================================================
+=========================================================================
+PRJNA529794 is changing headers.
+PRJNA529794 is end with changing headers.
+=========================================================================
+
+=== Strat generating gene_trans_map ===
+
+
+================================ End : anno_rd_perp() ================================
+

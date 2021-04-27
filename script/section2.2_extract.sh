@@ -3,7 +3,7 @@
 #description    :This script is to extract and calculate the results after ortholog searching
 #author         :Ruby(Yiru) Sheng
 #usage          : 1. source $CMRP_PATH/script/section2.2_extract.sh
-#                 2. source /media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/script/section2.2_extract.sh --source-only | ortho_perg_seq 2>&1 | tee ortho_perg_seq.log
+#                 2. source /media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/script/section2.2_extract.sh --source-only ; ortho_perg_seq 2>&1 | tee ortho_perg_seq.log
 #bash_version   :4.4.19(1)-release
 #=======================================================================================================================
 
@@ -474,20 +474,27 @@ function anno_rd_perp() {
   sed -i 's/: /_/1; s/[.]/_/g; s/>//1; s/group_/>g/1' RD_perg.pepseq.fasta
 
   echo
-  echo "=== Strat generating gene_trans_map ==="
+  echo "=== Removing redundancy ==="
   echo
-  # generate gene_trans_map
-  $TRINITY_HOME/util/support_scripts/get_Trinity_gene_to_trans_map.pl RD_perg.dnaseq.fasta > RD_perg.gene_trans_map
+  grep '>' RD_perg.dnaseq.fasta | sort | uniq > RD_uniq_dna.lst
+  grep '>' RD_perg.pepseq.fasta | sort | uniq > RD_uniq_pep.lst
+  rm -v RD_uniq_dnaseq.fasta RD_uniq_pepseq.fasta
+  while IFS= read -r line; do
+    awk -v pat="$line" '{ if ($0 ~ pat) {print; getline; print;} }' RD_perg.dnaseq.fasta | head -2 >> RD_uniq_dnaseq.fasta
+  done < RD_uniq_dna.lst
+  while IFS= read -r line; do
+    awk -v pat="$line" '{ if ($0 ~ pat) {print; getline; print;} }' RD_perg.pepseq.fasta | head -2 >> RD_uniq_pepseq.fasta
+  done < RD_uniq_pep.lst
 
   echo
   echo "=== Strat changing headers ==="
   echo
-  for file in `ls -1 ./input/*_pep.fasta`; do
+  for file in `ls -1 ../input/*_pep.fasta`; do
     file=`basename $file`
     sp_name=${file%_pep.fasta}
     echo "========================================================================="
     echo ${sp_name}" is changing headers."
-    cat RD_perg.pepseq.fasta | awk -v species="${sp_name}" '{if ($0 ~ pat) {print $0 } }'   > RD_${sp_name}_pephead.lst
+    grep '>' RD_uniq_pep.lst | awk -v species="${sp_name}" '{if ($0 ~ pat) {print $0 } }'   > RD_${sp_name}_pephead.lst
     sed -i 's/_/\t/1; s/_/./g; s/[.]/_/1' RD_${sp_name}_pephead.lst
     awk '{if(NR==1) {print $0} else {if($0 ~ /^>/) {print "\n"$0} else {printf $0}}}' \
          ../../data/${sp_name}/${sp_name}_RSEM.fasta.transdecoder.pep > tmp.fa
@@ -496,37 +503,27 @@ function anno_rd_perp() {
     while IFS= read -r line; do
       group_num=`echo $line | awk '{print $1}'`
       pattern=`echo $line | awk '{print $2}'`
-      echo ${group_num}
-      echo ${pattern}
       awk -v pat="$pattern" '{ if ($0 ~ pat) { print; getline; print;} }' tmp.fa > tmp_line
       pattern=${pattern%.i*}
       pattern_new=`echo $pattern | sed 's/[.]/_/g'`
       c="${group_num}_${pattern_new}"
       sed -i -e "s/${pattern}/${c}/g; s/[.]i/_i/g; s/[.]p/_p/g" tmp_line
       cat tmp_line >> RD_${sp_name}.transdecoder.pep
-      rm tmp_line
+      rm tmp_line tmp.fa
     done < RD_${sp_name}_pephead.lst
     sed -i 's/>g/g/g' RD_${sp_name}.transdecoder.pep
-
 
     echo ${sp_name%_pep}" is end with changing headers."
     echo "========================================================================="
   done
+  cat RD_PRJNA*.transdecoder.pep > RD_uniq_mergepepseq.fasta  
+
 
   echo
-  echo "=== Removing redundancy ==="
+  echo "=== Strat generating gene_trans_map ==="
   echo
-  cat RD_PRJNA*.transdecoder.pep > allRD_perg.merge.transdecoder.pep
-  grep '>' RD_perg.dnaseq.fasta | sort | uniq > RD_uniq_dna.lst
-  grep '>' RD_perg.pepseq.fasta | sort | uniq > RD_uniq_pep.lst
-  grep '>' allRD_perg.merge.transdecoder.pep | sort | uniq > RD_uniq_merge.lst
-  while IFS= read -r line; do
-    awk -v pat="$line" '{ if ($0 ~ pat) {print; getline; print;} }' RD_perg.dnaseq.fasta | head -2 >> RD_uniq_dnaseq.fasta
-  done < RD_uniq_dna.lst
-  while IFS= read -r line; do
-    awk -v pat="$line" '{ if ($0 ~ pat) {print; getline; print;} }' RD_perg.pepseq.fasta | head -2 >> RD_uniq_pepseq.fasta
-    awk -v pat="$line" '{ if ($0 ~ pat) {print; getline; print;} }' allRD_perg.merge.transdecoder.pep | head -2 >> RD_uniq_mergepepseq.fasta
-  done < RD_uniq_pep.lst
+  # generate gene_trans_map
+  $TRINITY_HOME/util/support_scripts/get_Trinity_gene_to_trans_map.pl RD_uniq_dnaseq.fasta > RD_perg.gene_trans_map
 
   # back to rodent_lst/
   cd ..
@@ -537,7 +534,7 @@ function anno_rd_perp() {
 
 }
 
-# anno_rd_perp
+# anno_rd_perp 2>&1 | tee anno_rd_perp.log
 
 
 

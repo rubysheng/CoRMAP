@@ -1,0 +1,14 @@
+
+================================ Start : ortho_sum() ================================
+  ####################################################################################################################
+  # ortho_sum()
+  #   Generate (3) lists of total, all clustered, and never clustered peptides' header for each project used in this orthomcl searching.
+  #   Input: './output/groups/groups.txt'; './input/*_pep.fasta'
+  #   Require: have had a folder under the current directory- './analyze'
+  #   Output: 'orgin_${sp_name%_pep}.lst'
+  ####################################################################################################################
+removed 'clustered_lst.tmp'
+removed 'clustered_lst.tmp'
+
+================================ End : ortho_sum() ================================
+

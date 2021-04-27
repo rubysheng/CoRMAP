@@ -55,17 +55,25 @@ function load_annodb() {
   #### Uncompress and prepare the Pfam database for use with 'hmmscan' like so:
   gunzip Pfam-A.hmm.gz
   hmmpress Pfam-A.hmm
+  
+  # back to rodent_lst/
+  cd ../..
 }
 
 
 
 function annotation () {
   # in the rodent_lst/annotation/anno_output
-  $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite init --gene_trans_map ../RD_perg.gene_trans_map --transcript_fasta  ../RD_uniq_dnaseq.fasta --transdecoder_pep ../RD_uniq_mergepepseq.fasta
+  cd annotation/anno_output
+  $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite init \
+      --gene_trans_map ../RD_perg.gene_trans_map \
+      --transcript_fasta  ../RD_uniq_dnaseq.fasta \
+      --transdecoder_pep ../RD_uniq_mergepepseq.fasta
   blastx -query ../RD_uniq_dnaseq.fasta -db swissprot_TRIN -num_threads 14 \
       -max_target_seqs 5 -outfmt 6 -evalue 1e-3 > allRD_blastx_TRIN.outfmt6
   $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastx allRD_blastx_TRIN.outfmt6
-  blastp -query ../RD_uniq_mergepepseq.fasta -db swissprot_TRIN  -num_threads 16 -max_target_seqs 1 -outfmt 6 -evalue 1e-3 > allRD_blastp_TRIN.outfmt6
+  blastp -query ../RD_uniq_mergepepseq.fasta -db swissprot_TRIN  -num_threads 16 \
+      -max_target_seqs 1 -outfmt 6 -evalue 1e-3 > allRD_blastp_TRIN.outfmt6
   hmmscan --cpu 16 --domtblout allRD_TrinotatePFAM.out \
     Pfam-A.hmm ../RD_uniq_mergepepseq.fasta > allRD_pfam.log
   $TRINOTATE_HOME/Trinotate Ruby_transpip.sqlite LOAD_swissprot_blastp allRD_blastp_TRIN.outfmt6
@@ -74,7 +82,8 @@ function annotation () {
 }
 
 function main() {
-
+  load_annodb 2>&1 | tee load_annodb.log
+  annotation 2>&1 | tee annotation.log
 }
 
 if [ "${1}" != "--source-only" ]; then

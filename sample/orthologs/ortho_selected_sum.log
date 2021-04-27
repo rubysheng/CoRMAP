@@ -1,0 +1,12 @@
+
+================================ Start : ortho_selected_sum() ================================
+  ####################################################################################################################
+  # ortho_selected_sum()
+  #   For those selected projects, after obtain the list of all clustered peptides' group number, header in 'allsp_groups.txt', and pepname for each selected project used in this orthomcl searching.
+  #   Input: './analyze/allsp_groups.txt'; './input/*_pep.fasta'
+  #   Require: have had a folder under the current directory- './analyze'
+  #   Output: './analyze/clustered_${sp_name%_pep}.lst'
+  ####################################################################################################################
+
+================================ End : ortho_selected_sum() ================================
+

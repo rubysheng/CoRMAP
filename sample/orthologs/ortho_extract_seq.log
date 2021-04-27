@@ -1,0 +1,24 @@
+
+================================ Start : ortho_extract_seq() ================================
+  ####################################################################################################################
+  # ortho_extract_seq()
+  #   Returns two fasta files of all peptides sequences and all dna sequences for each dataset
+  #   Input: './input/*_pep.fasta'; './fasta_dir/${file%_pep.fasta}_RSEM.fasta'; './analyze/clustered_${sp_name%_pep}.lst'
+  #   Require:
+  #   Output: './analyze/${sp_name%_pep}.pepseq.fasta'; './analyze/${sp_name%_pep}.dnaseq.fasta'
+  ####################################################################################################################
+=========================================================================
+PRJNA252803 is processing with extracting sequences from orthologs.
+removed './analyze/PRJNA252803.dnaseq.fasta'
+removed './analyze/PRJNA252803.pepseq.fasta'
+PRJNA252803 is end with processing of extracting sequences from orthologs.
+=========================================================================
+=========================================================================
+PRJNA529794 is processing with extracting sequences from orthologs.
+removed './analyze/PRJNA529794.dnaseq.fasta'
+removed './analyze/PRJNA529794.pepseq.fasta'
+PRJNA529794 is end with processing of extracting sequences from orthologs.
+=========================================================================
+
+================================ End : ortho_extract_seq() ================================
+

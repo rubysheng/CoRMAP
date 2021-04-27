@@ -1,0 +1,215 @@
+CMD: /media/lewis/New_Seagate_Drive_8TB/ruby/Trinotate-Trinotate-v3.2.1/util/trinotateSeqLoader/TrinotateSeqLoader.pl --sqlite Ruby_transpip.sqlite --gene_trans_map ../RD_perg.gene_trans_map --transcript_fasta ../RD_uniq_dnaseq.fasta --transdecoder_pep ../RD_uniq_mergepepseq.fasta --bulk_load
+-parsing gene/trans map file.... done.
+-loading Transcripts.
+[100]   [200]   [300]   [400]   [500]   [600]   [700]   [800]   [900]   [1000]   [1100]   [1200]   [1300]   [1400]   [1500]   [1600]   [1700]   [1800]   [1900]   [2000]   [2100]   [2200]   [2300]   [2400]   [2500]   [2600]   [2700]   [2800]   [2900]   [3000]   [3100]   [3200]   [3300]   [3400]   [3500]   [3600]   [3700]   [3800]   [3900]   [4000]   [4100]   [4200]   [4300]   [4400]   [4500]   [4600]   [4700]   [4800]   [4900]   [5000]   [5100]   [5200]   [5300]   [5400]   [5500]   [5600]   [5700]   [5800]   [5900]   [6000]   [6100]   [6200]   [6300]   [6400]   [6500]   [6600]   [6700]   [6800]   [6900]   [7000]   [7100]   [7200]   [7300]   [7400]   [7500]   [7600]   [7700]   [7800]   [7900]   [8000]   [8100]   [8200]   [8300]   [8400]   [8500]   [8600]   [8700]   [8800]   [8900]   [9000]   [9100]   [9200]   [9300]   [9400]   [9500]   [9600]   [9700]   [9800]   [9900]   [10000]   [10100]   [10200]   [10300]   [10400]   [10500]   [10600]   [10700]   [10800]   [10900]   [11000]   [11100]   [11200]   [11300]   [11400]   [11500]   [11600]   [11700]   [11800]   [11900]   [12000]   [12100]   [12200]   [12300]   [12400]   [12500]   [12600]   [12700]   [12800]   [12900]   [13000]   [13100]   [13200]   [13300]   [13400]   [13500]   [13600]   [13700]   [13800]   [13900]   [14000]   [14100]   [14200]   [14300]   [14400]   [14500]   [14600]   [14700]   [14800]   [14900]   [15000]   [15100]   [15200]   [15300]   [15400]   [15500]   [15600]   [15700]   [15800]   [15900]   [16000]   [16100]   [16200]   [16300]   [16400]   [16500]   [16600]   [16700]   [16800]   [16900]   [17000]   [17100]   [17200]   [17300]   [17400]   [17500]   [17600]   [17700]   [17800]   [17900]   [18000]   [18100]   [18200]   [18300]   [18400]   [18500]   [18600]   [18700]   [18800]   [18900]   [19000]   [19100]   [19200]   [19300]   [19400]   [19500]   [19600]   [19700]   [19800]   [19900]   [20000]   [20100]   [20200]   [20300]   [20400]   [20500]   [20600]   [20700]   [20800]   [20900]   [21000]   [21100]   [21200]   [21300]   [21400]   [21500]   [21600]   [21700]   [21800]   [21900]   [22000]   [22100]   [22200]   [22300]   [22400]   [22500]   [22600]   [22700]   [22800]   [22900]   [23000]   [23100]   [23200]   [23300]   [23400]   [23500]   [23600]   [23700]   [23800]   [23900]   [24000]   [24100]   [24200]   [24300]   [24400]   [24500]   [24600]   [24700]   [24800]   [24900]   [25000]   [25100]   [25200]   [25300]   [25400]   [25500]   [25600]   [25700]   [25800]   [25900]   [26000]   [26100]   [26200]   [26300]   [26400]   [26500]   [26600]   [26700]   [26800]   [26900]   [27000]   [27100]   [27200]   [27300]   [27400]   [27500]   [27600]   
+done.
+-loading ORFs.
+[10000]   [20000]   [30000]   [40000]   [50000]   
+done.
+
+CMD: echo "pragma journal_mode=memory;
+pragma synchronous=0;
+pragma cache_size=4000000;
+.mode tabs
+.import tmp.Transcript.bulk_load Transcript" | sqlite3 Ruby_transpip.sqlite
+memory
+tmp.Transcript.bulk_load:235: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:314: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:349: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:771: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:945: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:985: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1038: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1213: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1229: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1259: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1319: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1372: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1555: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1881: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1895: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1955: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1967: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:1977: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:2453: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:2631: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:3720: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:3847: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:3904: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:3981: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4039: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4048: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4072: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4087: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4124: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4135: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4164: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4175: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4301: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4326: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4404: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4450: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4464: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4572: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:4590: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:5328: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:5737: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7018: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7078: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7267: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7325: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7348: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7469: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7803: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7908: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7919: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:7930: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:8076: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:8370: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:8380: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:8552: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:8816: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:9041: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:9273: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:9442: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:9452: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:9629: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:10155: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:10186: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:10516: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:10578: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:10895: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:11836: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:12406: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:12418: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:12822: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:12954: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:13057: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:13107: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:13161: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:13226: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:13259: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:13455: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:14083: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:14094: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:14146: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:14657: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:14850: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:14861: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:15134: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:15830: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:16034: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:16323: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:16655: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:16716: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:16727: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:16851: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:16881: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:17395: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:17562: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:17994: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:18005: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:18016: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:18027: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:18059: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:18112: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:18332: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:18897: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:19194: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:19470: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:19660: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20073: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20091: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20290: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20519: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20635: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20652: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20715: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20727: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20797: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:20918: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:21319: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:21352: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:22018: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:22107: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:22209: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:22231: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:22294: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:22303: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:22314: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:23252: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:23351: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:23363: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:23958: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:23976: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:24044: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:24088: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:24177: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:24272: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:24310: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:24340: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:24457: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:24558: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:24996: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:25664: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:25818: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:26052: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:26205: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:26275: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:26356: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:26437: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:26534: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:26648: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+tmp.Transcript.bulk_load:27000: INSERT failed: UNIQUE constraint failed: Transcript.transcript_id
+CMD: echo "pragma journal_mode=memory;
+pragma synchronous=0;
+pragma cache_size=4000000;
+.mode tabs
+.import tmp.ORF.bulk_load ORF" | sqlite3 Ruby_transpip.sqlite
+memory
+tmp.ORF.bulk_load:24289: INSERT failed: UNIQUE constraint failed: ORF.orf_id
+
+
+Loading complete..
+
+CMD: /media/lewis/New_Seagate_Drive_8TB/ruby/Trinotate-Trinotate-v3.2.1/util/trinotateSeqLoader/Trinotate_BLAST_loader.pl --sqlite Ruby_transpip.sqlite --outfmt6 allRD_blastx_TRIN.outfmt6 --prog blastx --dbtype Swissprot
+CMD: echo "pragma journal_mode=memory;
+pragma synchronous=0;
+pragma cache_size=4000000;
+.mode tabs
+.import tmp.blast_bulk_load.117478 BlastDbase" | sqlite3 Ruby_transpip.sqlite
+memory
+
+
+BlastDbase loading complete..
+
+Warning: [blastp] Examining 5 or more matches is recommended
+CMD: /media/lewis/New_Seagate_Drive_8TB/ruby/Trinotate-Trinotate-v3.2.1/util/trinotateSeqLoader/Trinotate_BLAST_loader.pl --sqlite Ruby_transpip.sqlite --outfmt6 allRD_blastp_TRIN.outfmt6 --prog blastp --dbtype Swissprot
+CMD: echo "pragma journal_mode=memory;
+pragma synchronous=0;
+pragma cache_size=4000000;
+.mode tabs
+.import tmp.blast_bulk_load.58382 BlastDbase" | sqlite3 Ruby_transpip.sqlite
+memory
+
+
+BlastDbase loading complete..
+
+CMD: /media/lewis/New_Seagate_Drive_8TB/ruby/Trinotate-Trinotate-v3.2.1/util/trinotateSeqLoader/Trinotate_PFAM_loader.pl --sqlite Ruby_transpip.sqlite --pfam allRD_TrinotatePFAM.out
+CMD: echo "pragma journal_mode=memory;
+pragma synchronous=0;
+pragma cache_size=4000000;
+.mode tabs
+.import tmp.pfam_bulk_load.58387 HMMERDbase" | sqlite3 Ruby_transpip.sqlite
+memory
+
+
+Loading complete..
+
+CMD: /media/lewis/New_Seagate_Drive_8TB/ruby/Trinotate-Trinotate-v3.2.1/util/Trinotate_report_writer.pl --sqlite Ruby_transpip.sqlite 
+String for ID g1275_RDmus_PRJNA529794_DN104008_c3_g2_i20 is too long, truncating number of blast hits being reported here.
+String for ID g27_RDmus_PRJNA529794_DN101171_c0_g1_i2 is too long, truncating number of blast hits being reported here.
+String for ID g27_RDmus_PRJNA529794_DN64947_c1_g1_i1 is too long, truncating number of blast hits being reported here.
+String for ID g27_RDmus_PRJNA529794_DN742145_c0_g1_i1 is too long, truncating number of blast hits being reported here.
+String for ID g27_RDmus_PRJNA529794_DN89145_c0_g2_i1 is too long, truncating number of blast hits being reported here.
+String for ID g27_RDmus_PRJNA529794_DN89145_c0_g2_i2 is too long, truncating number of blast hits being reported here.

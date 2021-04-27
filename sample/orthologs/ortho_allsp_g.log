@@ -1,0 +1,12 @@
+
+================================ Start : ortho_allsp_g() ================================
+  ####################################################################################################################
+  # ortho_allsp_g()
+  #   Extract the groups that contain peptides from all projects from the peptides counting table, then use these group numbers to find the lines containing peptides headers in these groups from orginal groups output files.
+  #   Input: './analyze/stat/groups.counts.stat', './output/groups/groups.txt'
+  #   Require: have had a folder under the current directory- './analyze/stat/'; move 'groups.counts.stat' to './analyze/stat/'
+  #   Output: './analyze/stat/allsp_g.counts.stat', './analyze/allsp_groups.txt'
+  ####################################################################################################################
+
+================================ End : ortho_allsp_g() ================================
+

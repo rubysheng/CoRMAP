@@ -30,7 +30,7 @@ while getopts "h?:l:o:" opt; do
         if [[ "${output_dir: -1}" != '/' ]]; then
             output_dir=${output_dir}"/"
         fi
-        #mkdir -p ${output_dir}
+        # mkdir -p ${output_dir}
     esac
 done
 shift $(( OPTIND-1 ))
@@ -71,7 +71,8 @@ if [ ! "${list}" = "" ]; then # have a input list
     printf 'Taxonomy_code: %s, Dir: %s\n' "$f1" "$f2"
     echo
     SP_CODE="$f1"
-    DIR="$f2"
+    echo "Absolute path to the dataset directory: "
+    read DIR  
     cd ${DIR}
     preprocessTPM ${SP_CODE} ${input_dir}
     echo

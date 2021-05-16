@@ -71,8 +71,7 @@ if [ ! "${list}" = "" ]; then # have a input list
     printf 'Taxonomy_code: %s, Dir: %s\n' "$f1" "$f2"
     echo
     SP_CODE="$f1"
-    echo "Absolute path to the dataset directory: "
-    read DIR  
+    DIR="$f2"
     cd ${DIR}
     preprocessTPM ${SP_CODE} ${input_dir}
     echo

@@ -2,9 +2,9 @@
 #title          :section2.1_header_and_aa.sh
 #description    :The preparation for ortholog searching - rename header of sequences and predict amino acid sequences
 #author         :Ruby(Yiru) Sheng
-#usage          :source $CMRP_PATH/script/section2.1_header_and_aa.sh -l list -o output_dir
+#usage          :source $CMRP_PATH/script/section2.1_header_and_aa.sh -l input_dir_list -o output_dir
 #input files    :a list of target directories with absolute paths which can find *fasta.RSEM.transcripts.fa
-#output files   :expression matrix, annotation table ...
+#output files   :renamed Fasta files and gene_trans_map ...
 #bash_version   :4.4.19(1)-release
 #=======================================================================================================================
 
@@ -51,7 +51,9 @@ function preprocessFA() {
     echo "No renamed file"
     echo "    Reformating Trinity.fasta.RSEM.transcripts.fa to "${FA_NEWNAME}
     echo
-    sed "s+TRINITY+${file}+g" trinity_out_dir/Trinity.fasta.RSEM.transcripts.fa > ${FA_NEWNAME}
+    find . -name "Trinity.fasta.RSEM.transcripts.fa" -exec cp -v {} ./tmp.transcripts.fa \;
+    sed "s+TRINITY+${file}+g" tmp.transcripts.fa > ${FA_NEWNAME}
+    rm -v tmp.transcripts.fa
     sed -i "s/_/./g" ${FA_NEWNAME}
     echo "Adding the taxon code"
     sed -i "s/>/>${TAX_CODE}_/g" ${FA_NEWNAME}

@@ -12,25 +12,18 @@
 
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 input_dir=""
-output_dir=""
 list=""
 
-while getopts "h?:l:o:" opt; do
+while getopts "h?:l:" opt; do
     case "$opt" in
     h)
         echo "-l is a required list with input directories (to find the raw TPM expression matrix) "
-        echo "-o is a required output directory"
         echo "-h shows this help message"
         echo "press Ctrl+C to exit"
           # exit 0
         ;;
     l) list=$OPTARG
         ;;
-    o) output_dir=$OPTARG
-        if [[ "${output_dir: -1}" != '/' ]]; then
-            output_dir=${output_dir}"/"
-        fi
-        # mkdir -p ${output_dir}
     esac
 done
 shift $(( OPTIND-1 ))

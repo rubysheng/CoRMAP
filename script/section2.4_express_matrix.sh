@@ -2,9 +2,9 @@
 #title          :section2.4_express_matrix.sh
 #description    : .
 #author         :Ruby(Yiru) Sheng
-#usage          :source $CMRP_PATH/script/section2.4_express_matrix.sh -l input_dir_list -o output_dir 2>&1 | tee express_matrix.log
-#input files    :a list of target directories with absolute paths which can find *.gene.TPM.not_cross_norm
-#output files   :renamed expression matrix of clustered orthologous genes
+#usage          :source $CMRP_PATH/script/section2.4_express_matrix.sh -l input_dir_list 2>&1 | tee express_matrix.log
+#input files    :a list of target directories with absolute paths which can find 'rsem-gene.gene.TPM.not_cross_norm'
+#output files   :renamed expression matrix of all transcript isoforms
 #bash_version   :4.4.19(1)-release
 #=======================================================================================================================
 

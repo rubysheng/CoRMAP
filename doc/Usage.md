@@ -164,6 +164,20 @@ Obtatin Trinotate report examople by using the following commandline.
 tar -zxvf $CMRP_PATH/sample/orthologs/annotation/anno_output/allRD_trinotate_annotation_report.xls.tar.gz
 ```
 
+Rename expression tables by orthologs.
+```SHELL
+mkdir expression_matrix
+cd expression_matrix
+mkdir output
+source $CMRP_PATH/script/section2.4_express_matrix.sh -l expressionMX_input_dir_list 2>&1 | tee express_matrix.log
+
+```
+
+
+
+
+
+
 Run with the following R scripts to help analyze the data generate final tables.
 - convert_to_longtb.R
 - longtb_reorder.R

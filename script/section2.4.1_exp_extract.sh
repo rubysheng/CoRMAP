@@ -27,7 +27,7 @@ for line in `ls -1 ./TPM_input/*.gene.TPM`; do
 
   while IFS= read -r line; do
     group_num=`echo $line | sed 's/_/|/; s/.*>\(.*\)|.*/\1/'`
-    dataset_num=`cut -d'_' -f3 $line`
+    dataset_num=`echo $line |cut -d'_' -f3`
     pattern="${line%_i*}"
     pattern="${pattern#*_}"
     tpm_file=${dataset_num}".gene.TPM"

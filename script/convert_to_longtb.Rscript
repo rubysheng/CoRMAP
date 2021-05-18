@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 ###########################################################################################
 ## Step 1:                                                                               ##
 ## Convert the TPM matrix to a long format text file that only includes one column       ##

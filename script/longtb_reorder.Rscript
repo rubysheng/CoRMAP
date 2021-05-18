@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 ###########################################################################################
 ## Step 2:                                                                               ##
 ## 1) Convert a one column (TPM_Value) text file to a long format excel table            ##

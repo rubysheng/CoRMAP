@@ -19,11 +19,10 @@ for line in `ls -1 ./TPM_input/*.gene.TPM`; do
   file=`basename $line`
   sp_name=${file%.gene.TPM}
   per_set_lst=${sp_name}"_uniq_dna.lst"
-  tpm_file=${sp_name}".gene.TPM"
   extracted_tpm=${sp_name}".allsp_clugene.TPM"
 
   grep ${sp_name} RD_uniq_dna.lst | sort | uniq > tmp_per_set.lst
-  head -1 ${tpm_file} > tmp_exp.matrix
+  head -1 ./TPM_input/${sp_name}.gene.TPM > tmp_exp.matrix
 
   while IFS= read -r line; do
     group_num=`echo $line | sed 's/_/|/; s/.*>\(.*\)|.*/\1/'`

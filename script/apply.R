@@ -1,11 +1,25 @@
-# install.packages("readxl")
-# install.packages("writexl")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager","argparse","readxl","writexl","stringr")
+BiocManager::install()
+
+suppressPackageStartupMessages(library("argparse"))
+parser = ArgumentParser()
+parser$add_argument("--name_list", help="a file containing a list of dataset names", required=TRUE)
+parser$add_argument("--input", help="the folder holding input long formated xlsx files (long_format_*_mulgp.xlsx)", required=TRUE)
+parser$add_argument("--output", help="path to save the modified output xlsx files", required=TRUE)
+args = parser$parse_args()
+
+name_list_file = args$name_list
+input_path = args$input
+output_path = args$output
+
+
 library(readxl)
 library(writexl)
 library(stringr)
-setwd("C:/Users/tts_p/Documents/MSc/MSc_thesis/RNA-seq/expression/")
 
-files<-c("Bombina","PRJNA252803","PRJNA287145","PRJNA287152","PRJNA302146","PRJNA316996","PRJNA381689","PRJNA390522","PRJNA419677","PRJNA422916","PRJNA450614","PRJNA451011","PRJNA475804","PRJNA529794","PRJNA541005")
+
+files <- scan(name_list_file, character(), quote = "")
 
 
 duplicate_rows <- function(Group_Num,Species,Project,gene,treatment,TPM_Value,multi) {
@@ -25,7 +39,7 @@ count_pt <- function(mul,col) { str_count(mul[col],"/")+1 }
 
 for (i in 1:length(files)){
   project <- files[i]
-  file_path <- paste0("C:/Users/tts_p/Documents/MSc/MSc_thesis/RNA-seq/expression/output/Newfolder/long_format_",project,"_mulgp.xlsx")
+  file_path <- paste0(input_path,"long_format_",project,"_mulgp.xlsx")
   long_df <- read_xlsx(file_path)
   slash_loc <- which(grepl(pattern="/", x=long_df$Group_Num))
   single <- data.frame(long_df[-slash_loc,])
@@ -40,6 +54,6 @@ for (i in 1:length(files)){
   rownames(new_mul) <- 1:nrow(new_mul)
   mul <- new_mul[1:6]
   out_long <- rbind(mul,single)
-  output_file_path <- paste0("C:/Users/tts_p/Documents/MSc/MSc_thesis/RNA-seq/expression/output/Newfolder/long_format_",project,"_mulgp.xlsx")
+  output_file_path <- paste0(output_path,"long_format_",project,"_mulgp.xlsx")
   write_xlsx(out_long,output_file_path)
 }

@@ -31,8 +31,7 @@ for line in `ls -1 ./TPM_input/*.gene.TPM`; do
     new_name="${pattern}"
     pattern="${pattern#*_}"
     awk -v pat="$pattern" -v new="$new_name" '{ if ($0 ~ pat) {$1=new; print; } }' \
-      ./TPM_input/${dataset_num}.gene.TPM > tmp.line
-      >> tmp_exp.matrix
+      ./TPM_input/${dataset_num}.gene.TPM >> tmp_exp.matrix
   done < tmp_per_set.lst
 
   mv -v tmp_exp.matrix ${extracted_tpm}

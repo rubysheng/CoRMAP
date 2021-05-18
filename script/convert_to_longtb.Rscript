@@ -12,7 +12,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager","argparse")
 BiocManager::install()
 
-suppressPackageStartupMessages(library("argparse"))
+suppressPackageStartupMessages(library(argparse))
 
 parser = ArgumentParser()
 parser$add_argument("--name_list", help="a file containing a list of dataset names", required=TRUE)

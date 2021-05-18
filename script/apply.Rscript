@@ -4,7 +4,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager","argparse","readxl","writexl","stringr")
 BiocManager::install()
 
-suppressPackageStartupMessages(library("argparse"))
+suppressPackageStartupMessages(library(argparse))
 parser = ArgumentParser()
 parser$add_argument("--name_list", help="a file containing a list of dataset names", required=TRUE)
 parser$add_argument("--input", help="the folder holding input long formated xlsx files (long_format_*_mulgp.xlsx)", required=TRUE)

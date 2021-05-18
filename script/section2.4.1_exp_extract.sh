@@ -30,8 +30,8 @@ for line in `ls -1 ./TPM_input/*.gene.TPM`; do
     dataset_num=`echo $line | cut -d'_' -f3`
     pattern="${line%_i*}"
     pattern="${pattern#*_}"
-    tpm_file="./TPM_input/"${dataset_num}".gene.TPM"
-    cat ${tpm_file} | awk -v pat="$pattern" '{ if ($0 ~ pat) { print; } }' >> tmp_exp.matrix
+    awk -v pat="$pattern" '{ if ($0 ~ pat) { print; } }' \
+      ./TPM_input/${dataset_num}.gene.TPM >> tmp_exp.matrix
   done < tmp_per_set.lst
 
   mv -v tmp_exp.matrix ${extracted_tpm}

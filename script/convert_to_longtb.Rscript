@@ -29,7 +29,7 @@ files <- scan(name_list_file, character(), quote = "")
 for (i in 1:length(files)){
   project <- files[i]
   file_path <- paste0(mx_path, project,".allsp_clugene.TPM")
-  TPM_DF <- read.delim2(file_path, row.names = 1)
+  TPM_DF <- read.table(file_path, row.names = 1)
   TPM_matrix <- as.matrix(TPM_DF)
 
   long_m <- matrix(TPM_matrix, dimnames=list(t(outer(colnames(TPM_matrix), rownames(TPM_matrix), FUN=paste)), NULL))

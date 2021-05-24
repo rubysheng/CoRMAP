@@ -28,9 +28,11 @@ for line in `ls -1 ./TPM_input/*.gene.TPM`; do
     group_num=`echo $line | sed 's/_/|/; s/.*>\(.*\)|.*/\1/'`
     dataset_num=`echo $line | cut -d'_' -f3`
     pattern="${line%_i*}"
-    new_name="${patternsed}"
+    new_name="${pattern}"
     pattern="${pattern#*_}"
-    awk -v pat="$pattern" -v new="$new_name" '{ if ($0 ~ pat) {$1=new; print; } }' \
+    echo $pattern
+    echo $new_name
+    awk -v pat="$pattern" -v new="$new_name" '{ if ($1==pat) {$1=new; print; } }' \
       ./TPM_input/${dataset_num}.gene.TPM >> tmp_exp.matrix
   done < tmp_per_set.lst
 

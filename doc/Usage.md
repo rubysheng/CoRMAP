@@ -168,17 +168,31 @@ Rename and extract the expression values for orthologs in each dataset.
 ```SHELL
 mkdir expression_matrix
 cd expression_matrix
-mkdir output
 source $CMRP_PATH/script/section2.4_express_matrix.sh -l expressionMX_input_dir_list 2>&1 | tee express_matrix.log
+
+# at "$CMRP_PATH/sample/orthologs/expression_matrix/"
+source $CMRP_PATH/script/section2.4.1_exp_extract.sh ../annotation/RD_uniq_dna.lst  2>&1 | tee exp_extract.log
 
 ```
 
-
-
-
-
-
 Run with the following R scripts to help analyze the data generate final tables.
+```SHELL
+# at "$CMRP_PATH/sample/output/R_analysis"
+Rscript $CMRP_PATH/script/install_packages.R
+Rscript $CMRP_PATH/script/convert_to_longtb.Rscript \
+  --name_list input_dataset_name.txt
+  --input $CMRP_PATH/sample/orthologs/expression_matrix/ \
+  --output ./
+Rscript $CMRP_PATH/script/longtb_reorder.Rscript \
+  --name_list input_dataset_name.txt \
+  --input ./ \
+  --output ./
+Rscript $CMRP_PATH/script/apply.Rscript \
+  --name_list input_dataset_name.txt \
+  --input ./ \
+  --output ./
+
+```
 - convert_to_longtb.R
 - longtb_reorder.R
 - apply.R

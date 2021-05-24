@@ -59,5 +59,9 @@ for (i in 1:length(files)){
     out_long <- rbind(mul,single)
     output_file_path <- paste0(output_path,"long_format_",project,"_mulgp.xlsx")
     write_xlsx(out_long,output_file_path)
+<<<<<<< HEAD
   } 
+=======
+  }
+>>>>>>> 560f3f1081ec6b8b44c709adc5313b26c202f43f
 }

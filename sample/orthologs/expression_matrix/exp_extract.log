@@ -1,0 +1,6 @@
+'../annotation/RD_uniq_dna.lst' -> './RD_uniq_dna.lst'
+'tmp_exp.matrix' -> 'PRJNA252803.allsp_clugene.TPM'
+'tmp_per_set.lst' -> 'PRJNA252803_uniq_dna.lst'
+'tmp_exp.matrix' -> 'PRJNA529794.allsp_clugene.TPM'
+'tmp_per_set.lst' -> 'PRJNA529794_uniq_dna.lst'
+removed 'RD_uniq_dna.lst'

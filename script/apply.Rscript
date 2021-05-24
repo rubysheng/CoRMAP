@@ -44,18 +44,20 @@ for (i in 1:length(files)){
   file_path <- paste0(input_path,"long_format_",project,"_mulgp.xlsx")
   long_df <- read_xlsx(file_path)
   slash_loc <- which(grepl(pattern="/", x=long_df$Group_Num))
-  single <- data.frame(long_df[-slash_loc,])
-  rownames(single) <- 1:nrow(single)
-  mul <- data.frame(long_df[grepl(pattern="/", x=long_df$Group_Num),])
-  rownames(mul) <- 1:nrow(mul)
-  mul[,"multi"] <- apply(mul,1,count_pt, col="Group_Num")
-  # mul
-  expanded_rows <- Map(f = duplicate_rows,mul$Group_Num,mul$Species,mul$Project,mul$gene,mul$treatment,mul$TPM_Value,mul$multi)
-  new_mul <- do.call(rbind, expanded_rows)
-  new_mul$gene <- apply(new_mul, 1, rename_gene, col1="Group_Num",col2="gene")
-  rownames(new_mul) <- 1:nrow(new_mul)
-  mul <- new_mul[1:6]
-  out_long <- rbind(mul,single)
-  output_file_path <- paste0(output_path,"long_format_",project,"_mulgp.xlsx")
-  write_xlsx(out_long,output_file_path)
+  if (length(slash_loc)!=0) {
+    single <- data.frame(long_df[-slash_loc,])
+    rownames(single) <- 1:nrow(single)
+    mul <- data.frame(long_df[grepl(pattern="/", x=long_df$Group_Num),])
+    rownames(mul) <- 1:nrow(mul)
+    mul[,"multi"] <- apply(mul,1,count_pt, col="Group_Num")
+    # mul
+    expanded_rows <- Map(f = duplicate_rows,mul$Group_Num,mul$Species,mul$Project,mul$gene,mul$treatment,mul$TPM_Value,mul$multi)
+    new_mul <- do.call(rbind, expanded_rows)
+    new_mul$gene <- apply(new_mul, 1, rename_gene, col1="Group_Num",col2="gene")
+    rownames(new_mul) <- 1:nrow(new_mul)
+    mul <- new_mul[1:6]
+    out_long <- rbind(mul,single)
+    output_file_path <- paste0(output_path,"long_format_",project,"_mulgp.xlsx")
+    write_xlsx(out_long,output_file_path)
+  } 
 }

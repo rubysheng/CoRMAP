@@ -191,7 +191,15 @@ Rscript $CMRP_PATH/script/apply.Rscript \
   --name_list input_dataset_name.txt \
   --input ./ \
   --output ./
-
+Rscript $CMRP_PATH/script/xlsx_add_study.Rscript \
+  --name_list input_dataset_name.txt \
+  --input ./ \
+  --output ./ \
+  --studytype study_type.xlsx
+Rscript $CMRP_PATH/script/combine.Rscript \
+  --name_list input_dataset_name.txt \
+  --input ./ \
+  --output ./
 ```
 - convert_to_longtb.R
 - longtb_reorder.R

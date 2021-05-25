@@ -1,0 +1,9 @@
+treatment	TREAT_Code
+Control	1
+Fear	2
+FearConditioned_dVenus_neg	2
+FearConditioned_dVenus_pos	2
+HomeCage_dVenus_neg	1
+HomeCage_dVenus_pos	1
+NonShock_dVenus_neg	1
+NonShock_dVenus_pos	1

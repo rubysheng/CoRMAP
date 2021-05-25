@@ -1,0 +1,538 @@
+#!/usr/bin/env Rscript
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager","argparse","readxl","writexl")
+BiocManager::install()
+
+suppressPackageStartupMessages(library(argparse))
+parser = ArgumentParser()
+parser$add_argument("--name_list", help="a file containing a list of dataset names", required=TRUE)
+parser$add_argument("--input", help="the folder holding input long formated xlsx files (long_format_*_mulgp.xlsx)", required=TRUE)
+parser$add_argument("--output", help="path to save the modified output xlsx files (*_mulgp_clugene_sty.xlsx)", required=TRUE)
+parser$add_argument("--treatcode", help="a text file showing how to classify treatments", required=TRUE)
+parser$add_argument("--projectname", help="a text file showing the common name and rank of projects", required=TRUE)
+args = parser$parse_args()
+
+name_list_file = args$name_list
+input_path = args$input
+output_path = args$output
+treatcode_path = args$treatcode
+projectname = args$projectname
+
+library(readxl)
+library(dplyr)
+library(reshape2)
+library(sva)
+library(pamr)
+library(limma)
+library(rlist)
+library(tidyverse)
+
+
+# functions ---------------------------------------------------------------
+
+# generate the expression matrix
+tag <- function(input_df, col_in1, col_in2, col_out, pattern) {
+  input_df[col_out] <- paste(input_df[col_in1],input_df[col_in2],sep = pattern)
+}
+SVA_Edata_generater <- function(data = Expr_output, group1 = "Group_Num", group2, group3){
+  group_var <- c(group1, group2, group3)
+  caled_df <- data %>%
+    dplyr::group_by(across({{ group_var }})) %>%
+    dplyr::summarize(TPM_Value = mean(as.numeric(TPM_Value)))
+  caled_df$col_name <- apply(caled_df,1,tag, col_in1 = group2, col_in2 = group3, col_out = "col_name", pattern = "__")
+  output_table <-  data.frame(caled_df)
+  
+  return(output_table)
+}
+
+div <- function(line){
+  line[3] <- line[2]/ line[1]
+  line[4] <- line[1]/ line[2]
+  if (line[3]>=line[4]){ line[3] }else{ -line[4] }
+}
+
+
+
+# generate the a master table to save all TPM values ------------------------------------------------------------
+files <- scan(name_list_file, character(), quote = "")
+
+Expr_output <- data.frame("Group_Num"=NULL,"Taxa_Group"=NULL,"Species"=NULL,
+                          "Project"=NULL,"gene"=NULL,"Sample"=NULL,"Treatment"=NULL,"TPM_value"=NULL)
+
+for (i in 1:length(files)){
+  project <- files[i]
+  file_path <- paste0(input_path,project,"_mulgp_clugene_sty.xlsx")
+  input_df <- read_xlsx(file_path)
+  colnames(input_df)[c(5,10)] <- c("treatment","study_design")
+  input_df <- as.data.frame(input_df)
+  input_df$TPM_Value <- as.numeric(input_df$TPM_Value)
+  treatmnt <- data.frame(do.call('rbind', strsplit(as.character(input_df$treatment),'_rep',fixed=TRUE)))
+  input_df$treatment2 <- treatmnt$X1
+  rm(treatmnt)
+  
+  expr_df <- input_df[,c(1,18,2,3,4,5,19,6)]
+  colnames(expr_df)[6:7] <- c("Sample","Treatment")
+  Expr_output <- rbind(Expr_output,expr_df)
+  
+}
+
+
+treatcod <- read.delim(treatcode_path)
+a <- unique(Expr_output$Treatment)
+b <- treatcod$treatment
+if (length(a[which(!a %in% b)])!=0) {
+  add <- data.frame(treatment=a[which(!a %in% b)], TREAT_Code=c(1,2,1,2,2,2,1,1,1,1))
+  rm(a);rm(b)
+  treatcod <- rbind(treatcod,add)
+  rm(add)
+}
+colnames(treatcod)[1] <- "Treatment"
+
+
+Expr_output <- inner_join(Expr_output,treatcod)
+Expr_output <- Expr_output[,c(1:7,9,8)]
+save(Expr_output, file = paste0(output_path,"Expr_output.RData" ))
+write.csv(Expr_output,paste0(output_path,"Expr_output.csv"), row.names = FALSE)
+
+
+# average expression values by project and treat_code ------------------------
+pj_treat <- SVA_Edata_generater(Expr_output, group2 = "Project", group3 = "TREAT_Code")
+
+# generate the Expression data matrix
+edata <- dcast(pj_treat[,c(1,5,4)], Group_Num ~ col_name, value.var = "TPM_Value")
+
+df <- edata
+rownames(df) <- df[,1]
+df <- df[,-1]
+df[is.na(df)] <- 0
+test_df <- df
+test_df[] <- lapply(test_df, function(x) as.numeric(as.character(x)))
+# test_df <- as.matrix(test_df)
+
+
+df_fc <- test_df
+for (i in 1:length(files)){
+  project <- files[i]
+  project_cols <- test_df[,which(str_detect(colnames(test_df), project))]
+  
+  df_fc <- cbind(df_fc, round(apply(project_cols, 1, FUN=function(x2) div(x2)),2))
+  colnames(df_fc)[length(colnames(df_fc))] <- paste0(project,"_fc")
+}
+
+fc_table <- df_fc[,c((ncol(test_df)+1):ncol(df_fc))]
+
+colnames(fc_table) <- str_replace(colnames(fc_table),"_fc","")
+fc_table$group_num <- paste0("group_",rownames(fc_table))
+
+# interactive scatter plot ------------------------------------------------
+
+library(ggplot2)
+library(plotly)
+
+
+p <- fc_table %>%
+  ggplot( aes(PRJNA252803, PRJNA529794, text=group_num)) +
+  geom_point() +
+  theme_bw() + 
+  geom_abline(intercept = 0, slope = 1, color="red", linetype="dashed", size=1.5)
+
+ggplotly(p)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Group_Num, Taxa_group, Species, Project,gene,Sample,Treatment,TPM_Value,TREAT_Code
+project_name <- read.table(projectname,header = T)
+
+#______________________________________________________________________________#
+# by Project and samples                                                       #
+#______________________________________________________________________________#
+
+pj_sam <- SVA_Edata_generater(Expr_output, group2 = "Project", group3 = "Sample")
+  # generate the Expression data matrix
+edata <- dcast(pj_sam[,c(1,5,4)], Group_Num ~ col_name, value.var = "TPM_Value")
+
+df <- edata
+rownames(df) <- df[,1]
+df <- df[,-1]
+df[is.na(df)] <- 0
+test_df <- df
+test_df[] <- lapply(test_df, function(x) as.numeric(as.character(x)))
+test_df <- as.matrix(test_df)
+  # generate the Phenotype table
+foo <- data.frame(do.call('rbind', strsplit(as.character(colnames(df)),'__',fixed=TRUE)))
+colnames(foo)[1:2] <- c("project","Sample")
+sample_cod <- unique(Expr_output[,c( "Sample" , "TREAT_Code")])
+foo <- inner_join(foo,sample_cod)
+foo <- merge(foo,project_name)
+foo$CNAME <- paste(foo$code,foo$TREAT_Code,sep = "__")
+# rownames(foo) <- foo$CNAME
+# colnames(df) <- foo$CNAME
+# colnames(test_df) <- foo$CNAME
+# foo <- foo[,which(!colnames(foo)=="CNAME")]
+# colnames(foo)[1] <- c("batch")
+
+#______________________________________________________________________________#
+# by Project and TREAT_Code                                                    #
+#______________________________________________________________________________#
+
+pj_treat <- SVA_Edata_generater(Expr_output, group2 = "Project", group3 = "TREAT_Code")
+  # generate the Expression data matrix
+edata <- dcast(pj_treat[,c(1,5,4)], Group_Num ~ col_name, value.var = "TPM_Value")
+
+df <- edata
+rownames(df) <- df[,1]
+df <- df[,-1]
+df[is.na(df)] <- 0
+test_df <- df
+test_df[] <- lapply(test_df, function(x) as.numeric(as.character(x)))
+test_df <- as.matrix(test_df)
+  # generate the Phenotype table
+foo <- data.frame(do.call('rbind', strsplit(as.character(colnames(df)),'__',fixed=TRUE)))
+colnames(foo)[1:2] <- c("project","TREAT_Code")
+foo <- merge(foo,project_name)
+head(foo)
+foo$CNAME <- paste(foo$code,foo$TREAT_Code,sep = "__")
+rownames(foo) <- foo$CNAME
+colnames(df) <- foo$CNAME
+colnames(test_df) <- foo$CNAME
+foo <- foo[,which(!colnames(foo)=="CNAME")]
+colnames(foo)[1] <- c("batch")
+table(foo$TREAT_Code)
+# foo[which(grepl(pattern = "4.",x = foo$species_rank)),]
+
+#______________________________________________________________________________#
+# by Species and TREAT_Code                                                    #
+#______________________________________________________________________________#
+
+sp_treat <- SVA_Edata_generater(Expr_output, group2 = "Species", group3 = "TREAT_Code")
+
+# generate the Expression data matrix
+edata <- dcast(sp_treat[,c(1,5,4)], Group_Num ~ col_name, value.var = "TPM_Value")
+
+df <- edata
+rownames(df) <- df[,1]
+df <- df[,-1]
+df[is.na(df)] <- 0
+test_df <- df
+test_df[] <- lapply(test_df, function(x) as.numeric(as.character(x)))
+test_df <- as.matrix(test_df)
+# generate the Phenotype table
+foo <- data.frame(do.call('rbind', strsplit(as.character(colnames(df)),'__',fixed=TRUE)))
+colnames(foo)[1:2] <- c("Species","TREAT_Code")
+colnames(foo)[1] <- c("batch")
+foo$CNAME <- paste(foo$batch,foo$TREAT_Code,sep = "__")
+rownames(foo) <- foo$CNAME
+
+#______________________________________________________________________________#
+# by Taxa_group and TREAT_Code                                                 #
+#______________________________________________________________________________#
+
+taxa_treat <- SVA_Edata_generater(Expr_output, group2 = "Taxa_group", group3 = "TREAT_Code")
+
+# generate the Expression data matrix
+edata <- dcast(taxa_treat[,c(1,5,4)], Group_Num ~ col_name, value.var = "TPM_Value")
+
+df <- edata
+rownames(df) <- df[,1]
+df <- df[,-1]
+df[is.na(df)] <- 0
+test_df <- df
+test_df[] <- lapply(test_df, function(x) as.numeric(as.character(x)))
+test_df <- as.matrix(test_df)
+# generate the Phenotype table
+foo <- data.frame(do.call('rbind', strsplit(as.character(colnames(df)),'__',fixed=TRUE)))
+colnames(foo)[1:2] <- c("Taxa_group","TREAT_Code")
+colnames(foo)[1] <- c("batch")
+foo$CNAME <- paste(foo$batch,foo$TREAT_Code,sep = "__")
+rownames(foo) <- foo$CNAME
+
+
+#### adjust batch effects ####
+### apply sva to estimated batch ###
+  # type 2: adjust matrix (known batch effects)
+batch = foo$batch
+modcombat = model.matrix(~1, data=foo)
+combat_edata = ComBat(dat=test_df, batch=batch, mod=modcombat, par.prior=TRUE, prior.plots=FALSE)
+# View(combat_edata)
+pValuesComBat = f.pvalue(combat_edata,mod,mod0)
+qValuesComBat = p.adjust(pValuesComBat,method="BH")
+adjusted <- ComBat_seq(test_df, batch=batch, group=NULL)
+
+### select only DE OOGs expression valuee ###
+list <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/output/analysis/run_de_outdir/deg/degroup.lst", col.names = "GroupNum")
+
+deogg_expr <- test_df[which(rownames(test_df) %in% list$GroupNum),]
+# head(deogg_expr)
+# dim(deogg_expr)
+
+# generate the Phenotype table
+foo <- data.frame(do.call('rbind', strsplit(as.character(colnames(deogg_expr)),'__',fixed=TRUE)))
+colnames(foo)[1:2] <- c("batch","TREAT_Code")
+rownames(foo) <- colnames(deogg_expr)
+
+# apply sva to remove known batch effects
+batch = foo$batch
+modcombat = model.matrix(~1, data=foo)
+adjusted <- ComBat_seq(as.matrix(deogg_expr), batch=batch, group=NULL)
+group = foo$TREAT_Code
+adjusted_count <- ComBat_seq(as.matrix(deogg_expr), batch=batch, group=group)
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/batcheffects_removed_DE(Taxa_Tret).txt"
+write.table(adjusted_count,output_file_path,sep = "\t",quote = F)
+
+modBatch = model.matrix(~as.factor(TREAT_Code) + as.factor(batch),data=foo)
+mod0Batch = model.matrix(~as.factor(batch),data=foo)
+pValuesBatch = f.pvalue(deogg_expr,modBatch,mod0Batch)
+qValuesBatch = p.adjust(pValuesBatch,method="BH")
+
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/batcheffects_qValuesComBat_DE(Taxa_Tret).txt"
+write.table(qValuesBatch,output_file_path,sep = "\t",quote = F)
+
+head(adjusted_count)
+
+
+
+###### rename expression matrix row names with gene name #####
+
+load("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/max_bp_blastphit_deoog.RData")
+adjusted_expre <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/batcheffects_removed_DE(Taxa_Tret).txt")
+adjusted_expre$GroupNum <- rownames(adjusted_expre)
+
+heatmap_input <- merge(adjusted_expre,m_bp_anno[,1:2])
+heatmap_input <- heatmap_input[,c(ncol(heatmap_input),1:(ncol(heatmap_input)-1))]
+colnames(heatmap_input)[1] <- "NAME"
+foo <- data.frame(do.call('rbind', strsplit(as.character(heatmap_input$NAME),'_',fixed=TRUE)))
+colnames(foo)[1:2] <- c("SYMBOL","SPECIES")
+# sample_cod <- unique(Expr_output[,c( "Sample" , "TREAT_Code")])
+foo <- cbind(foo,heatmap_input$GroupNum)
+foo$NAME <- paste(foo$SYMBOL,foo$`heatmap_input$GroupNum`, sep = "|")
+heatmap_input$NAME <- foo$NAME
+heatmap_input <- heatmap_input[,-2]
+head(heatmap_input)
+colnames(heatmap_input)
+
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_batcheffects_removed_DE(Taxa_Tret).csv"
+write.csv(heatmap_input,output_file_path, row.names = FALSE)
+
+
+
+#### (optional!!) split columns to multiple files #####
+
+C.name <- colnames(heatmap_input)[-1]
+
+foo <- data.frame(do.call('rbind', strsplit(as.character(C.name),'__',fixed=TRUE)))
+colnames(foo)[1:2] <- c("Proj","Sam")
+foo <- cbind(C.name,foo)
+
+for (pro in unique(foo$Proj)) {
+  sub_c.name <- foo[which(foo$Proj==pro),"C.name"]
+  sub_sam <- foo[which(foo$Proj==pro),"Sam"]
+  sub_expr <- heatmap_input[,which(colnames(heatmap_input) %in% sub_c.name)]
+  colnames(sub_expr) <- sub_sam
+  sub_expr <- cbind(heatmap_input$NAME,sub_expr)
+  colnames(sub_expr)[1] <- "NAME"
+  output_file_path <- paste0("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/expression/output/analysis/run_de_outdir/deg/",pro,"_HeatM_batcheffects_removed_DE(Prj_Sam).csv")
+  write.csv(sub_expr,output_file_path, row.names = FALSE)
+}
+
+
+
+#### split target rows to a new file #####
+
+# load pan_learning_gp.csv
+learning_targets <- read.csv("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/pan_learning_gp.csv",header = T,sep = ",")
+head(learning_targets)
+learning_targets$NAME
+foo <- unique(learning_targets[,1:2])
+foo1 <- data.frame(do.call('rbind', strsplit(as.character(foo$NAME),'_',fixed=TRUE)))
+colnames(foo1)[1:2] <- c("symbol","species")
+foo <- cbind(foo1,foo[,2])
+foo$NAME <- paste(foo$symbol,foo$`foo[, 2]`,sep = "|")
+learning_targets_ls <- unique(foo$NAME)
+
+
+
+heatmap_input <- read.csv("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_batcheffects_removed_FC(Taxa_Tret).csv")
+head(heatmap_input)
+
+sub_heatmap_input <- heatmap_input[which(heatmap_input$NAME %in% learning_targets_ls),]
+dim(heatmap_input);dim(sub_heatmap_input)
+
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_BEr_FC(Taxa_Tret)_learning.csv"
+write.csv(sub_heatmap_input,output_file_path, row.names = FALSE)
+
+
+
+
+
+
+
+
+
+#### (optional!!) split rows to multiple files #####
+# download the gene list from pantherdb
+
+# # BP:L1-cellular processes_cellular metabolic process (GO:0044237)
+# GO_l2_tb1 <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/GO_BP_L2_0044237_CP.txt",header = F,sep = "\t",quote = "")
+# # head(GO_l2_tb1)
+# # BP:L1-cellular processes_cellular component organization (GO:0016043)
+# GO_l2_tb2 <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/GO_BP_L2_0016043.txt",header = F,sep = "\t",quote = "")
+# # head(GO_l2_tb2)
+# # BP:L1-metabolic processes_cellular metabolic process (GO:0044237)
+# GO_l2_tb3 <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/GO_BP_L2_0044237_MP.txt",header = F,sep = "\t",quote = "")
+# # head(GO_l2_tb3)
+# # BP:L1-metabolic processes_organic substance metabolic process (GO:0071704)
+# GO_l2_tb4 <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/GO_BP_L2_0071704.txt",header = F,sep = "\t",quote = "")
+# # head(GO_l2_tb4)
+# # BP:L1-metabolic processes_primary metabolic process (GO:0044238)
+# GO_l2_tb5 <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/GO_BP_L2_0044238.txt",header = F,sep = "\t",quote = "")
+# # head(GO_l2_tb5)
+#
+# # Pathway:L1-CCKR signaling map (P06959)
+# PW_l1_tb1 <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/PW_L1_P09659.txt",header = F,sep = "\t",quote = "")
+# # head(PW_l1_tb1)
+# # Pathway:L1-Gonadotropin-releasing hormone receptor pathway (P06664)
+# PW_l1_tb2 <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/PW_L1_P06664.txt",header = F,sep = "\t",quote = "")
+# # head(PW_l1_tb2)
+
+# BP:L1-cellular process (GO:0009987)
+GO_l1_tb1 <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/GO_BP_L1_0009987.txt",header = F,sep = "\t",quote = "")
+# head(GO_l1_tb1)
+# BP:L1-metabolic process (GO:0008152)
+GO_l1_tb2 <- read.table("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/annotation/GO_BP_L1_0008152.txt",header = F,sep = "\t",quote = "")
+# head(GO_l1_tb2)
+unique(GO_l1_tb1$V2);unique(GO_l1_tb2$V2)
+length(unique(GO_l1_tb1$V2));length(unique(GO_l1_tb2$V2))
+length(which(!unique(GO_l1_tb1$V2) %in% unique(GO_l1_tb2$V2)))
+length(which(!unique(GO_l1_tb2$V2) %in% unique(GO_l1_tb1$V2)))
+
+# gene_ls <- list(unique(GO_l2_tb1$V2),unique(GO_l2_tb2$V2),unique(GO_l2_tb3$V2),unique(GO_l2_tb4$V2),unique(GO_l2_tb5$V2),unique(PW_l1_tb1$V2),unique(PW_l1_tb2$V2))
+# names(gene_ls) <- c("BP:L1-cellular processes_cellular metabolic process (GO:0044237)",
+#                     "BP:L1-cellular processes_cellular component organization (GO:0016043)",
+#                     "BP:L1-metabolic processes_cellular metabolic process (GO:0044237)",
+#                     "BP:L1-metabolic processes_organic substance metabolic process (GO:0071704)",
+#                     "BP:L1-metabolic processes_primary metabolic process (GO:0044238)",
+#                     "Pathway:L1-CCKR signaling map (P06959)",
+#                     "Pathway:L1-Gonadotropin-releasing hormone receptor pathway (P06664)")
+#
+# which(!gene_ls[[1]] %in% gene_ls[[2]]);which(!gene_ls[[2]] %in% gene_ls[[1]])
+# which(!gene_ls[[1]] %in% gene_ls[[3]]);which(!gene_ls[[3]] %in% gene_ls[[1]])
+# which(!gene_ls[[3]] %in% gene_ls[[4]]);which(!gene_ls[[3]] %in% gene_ls[[5]]);which(!gene_ls[[4]] %in% gene_ls[[3]]);which(!gene_ls[[4]] %in% gene_ls[[5]]);which(!gene_ls[[5]] %in% gene_ls[[3]]);which(!gene_ls[[5]] %in% gene_ls[[4]])
+# which(!gene_ls[[6]] %in% gene_ls[[7]]);which(!gene_ls[[7]] %in% gene_ls[[6]])
+
+
+
+
+
+heatmap_input <- read.csv("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_batcheffects_removed_FC(Taxa_Tret).csv")
+head(heatmap_input)
+
+foo <- data.frame(do.call('rbind', strsplit(as.character(heatmap_input$NAME),'|',fixed=TRUE)))
+colnames(foo)[1:2] <- c("Name","ProN")
+head(foo)
+length(unique(foo$Name))
+
+sub_heatmap_input <- heatmap_input[which(foo$Name %in% unique(GO_l1_tb1$V2)),]
+sub_heatmap_input1 <- heatmap_input[which(!foo$Name %in% unique(GO_l1_tb1$V2)),]
+
+sub_heatmap_input2 <- heatmap_input[which(foo$Name %in% unique(GO_l2_tb1$V2)),]
+
+foo <- data.frame(do.call('rbind', strsplit(as.character(sub_heatmap_input$NAME),'|',fixed=TRUE)))
+colnames(foo)[1:2] <- c("Name","ProN")
+head(foo)
+length(unique(foo$Name))
+sub_heatmap_input3 <- sub_heatmap_input[which(!foo$Name %in% unique(GO_l2_tb1$V2)),]
+dim(heatmap_input);dim(sub_heatmap_input);dim(sub_heatmap_input2);dim(sub_heatmap_input3)
+
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_BEr_FC(Taxa_Tret)_gol1_0009987.csv"
+write.csv(sub_heatmap_input,output_file_path, row.names = FALSE)
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_BEr_FC(Taxa_Tret)_gol1_(0009987).csv"
+write.csv(sub_heatmap_input1,output_file_path, row.names = FALSE)
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_BEr_FC(Taxa_Tret)_gol2_0044237.csv"
+write.csv(sub_heatmap_input2,output_file_path, row.names = FALSE)
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_BEr_FC(Taxa_Tret)_gol2_(0044237).csv"
+write.csv(sub_heatmap_input3,output_file_path, row.names = FALSE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### (optional!!) FC calculation #####
+hm_expre <- read.csv("~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_batcheffects_removed_DE(Taxa_Tret).csv")
+
+ls <- unique(substr(colnames(hm_expre)[-1],1,2))
+
+data <- melt(hm_expre)
+foo <- data.frame(do.call('rbind', strsplit(as.character(data$variable),'__',fixed=TRUE)))
+colnames(foo)[1:2] <- c("CODE","TREAT_CODE")
+foo <- cbind(data,foo)
+foo <- foo[,c(1,4,5,3)]
+data <- dcast(foo, NAME + CODE ~ TREAT_CODE, value.var = "value")
+colnames(data)[3:4] <- c("avg_1","avg_2")
+
+data$Increase<- data$avg_2/data$avg_1
+data$Decrease<- -(data$avg_1/data$avg_2)
+head(data);colnames(data)
+data$FC <- apply(data, 1, function(x) as.numeric(x[which.max(c(x[5],abs(as.numeric(x[6]))))+4]))
+data_mx <- dcast(data, NAME ~ CODE, value.var = "FC")
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_batcheffects_removed_FC(Taxa_Tret).csv"
+write.csv(data_mx,output_file_path, row.names = FALSE)
+
+sig_oog_name <- data[which(abs(as.numeric(data$FC) )>=2 ),"NAME"]
+# length(sig_oog_name)
+# length(unique(sig_oog_name))
+
+sig_oog_df <- data[which(data$NAME %in% sig_oog_name),]
+common_oog_df <- data[-which(data$NAME %in% sig_oog_name),]
+dim(sig_oog_df);dim(common_oog_df)
+sig_oog_fc_mx <- dcast(sig_oog_df, NAME ~ CODE, value.var = "FC")
+common_oog_fc_mx <- dcast(common_oog_df, NAME ~ CODE, value.var = "FC")
+
+d <- sig_oog_fc_mx
+d[,2:ncol(d)] <- sapply(d[,2:ncol(d)] , as.numeric)
+sig_oog_fc_mx<-d
+d <- common_oog_fc_mx
+d[,2:ncol(d)] <- sapply(d[,2:ncol(d)] , as.numeric)
+common_oog_fc_mx<-d
+
+
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_batcheffects_removed_FCsig(Taxa_Tret).csv"
+write.csv(sig_oog_fc_mx,output_file_path, row.names = FALSE)
+
+output_file_path <- "~/Documents/Documents/MSc/MSc_thesis/RNA-seq/heatmapper_batcheffects_removed_FCcom(Taxa_Tret).csv"
+write.csv(common_oog_fc_mx,output_file_path, row.names = FALSE)

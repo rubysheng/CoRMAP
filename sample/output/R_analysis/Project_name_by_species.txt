@@ -1,0 +1,3 @@
+code	project	species_rank
+mouse_1	PRJNA252803	1.1
+mouse_3	PRJNA529794	1.1

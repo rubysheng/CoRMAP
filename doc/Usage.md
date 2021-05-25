@@ -201,12 +201,10 @@ Rscript $CMRP_PATH/script/combine.Rscript \
   --input ./ \
   --output ./
 ```
-- convert_to_longtb.R
-- longtb_reorder.R
-- apply.R
-- xlsx_add_study.R
-- combine.R
-- visualization.R
-- per_group.R
+- convert_to_longtb.Rscript
+- longtb_reorder.Rscript
+- apply.Rscript
+- xlsx_add_study.Rscript
+- combine.Rscript
 
 [Back to top](#usage-the-cmrp)

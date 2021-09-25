@@ -91,25 +91,3 @@ if [ ! "${list}" = "" ]; then # have a input list
   done < "${list}"
   count_l=`wc -l < ${list}`
 fi
-
-
-# ################################################################################
-# ### backup to cluster computer
-# ls -1 /media/lewis/Seagate_Backup_Plus_Drive/ruby/data/ > pro_acc
-# mkdir upload
-# while IFS=" " read -r line
-# do
-#  File="/media/lewis/Seagate_Backup_Plus_Drive/ruby/data/"${line}"/transcripts_count/rsem-gene.gene.TPM.not_cross_norm"
-#  NewName=${line}"_rsem-gene.gene.TPM.not_cross_norm"
-#  cp -v ${File} upload/${NewName}  
-# done < pro_acc
-# cp -v /media/lewis/New_Seagate_Drive_8TB/Bombina/transcripts_count/rsem-gene.gene.TPM.not_cross_norm upload/Bombina_rsem-gene.gene.TPM.not_cross_norm
-# scp upload/*  ruby@graham.computecanada.ca:/home/ruby/projects/def-heylanda/ruby/all_taxa/expression/
-# rm -r upload/
-# rm pro_acc
-# ################################################################################
-
-
-
-
-

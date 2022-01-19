@@ -16,26 +16,28 @@ suppressPackageStartupMessages(library(argparse))
 
 parser = ArgumentParser()
 parser$add_argument("--name_list", help="a file containing a list of dataset names", required=TRUE)
-parser$add_argument("--input", help="the folder holding input orthologs expression matrices (end with *.allsp_clugene.TPM)", required=TRUE)
+parser$add_argument("--input", help="the folder holding input orthologs expression matrices (end with *.allsp_clugene.[Suffix])", required=TRUE)
+parser$add_argument("--matrix_type", help="[Suffix] of matrix includes TPM, TMM, or RC (Raw Counts)", required=TRUE)
 parser$add_argument("--output", help="path to save the output tables", required=TRUE)
 args = parser$parse_args()
 
 name_list_file = args$name_list
 mx_path = args$input
+type = args$matrix_type
 output_path = args$output
 
 files <- scan(name_list_file, character(), quote = "")
 
 for (i in 1:length(files)){
   project <- files[i]
-  file_path <- paste0(mx_path, project,".allsp_clugene.TPM")
-  TPM_DF <- read.table(file_path, row.names = 1)
-  TPM_matrix <- as.matrix(TPM_DF)
+  file_path <- paste0(mx_path, project,".allsp_clugene.",type)
+  EXP_DF <- read.table(file_path, row.names = 1)
+  EXP_matrix <- as.matrix(EXP_DF)
 
-  long_m <- matrix(TPM_matrix, dimnames=list(t(outer(colnames(TPM_matrix), rownames(TPM_matrix), FUN=paste)), NULL))
+  long_m <- matrix(EXP_matrix, dimnames=list(t(outer(colnames(EXP_matrix), rownames(EXP_matrix), FUN=paste)), NULL))
 
   out_long <- data.frame(long_m)
-  colnames(out_long) <- "TPM_Value"
-  output_file_path <- paste0(output_path,"long_format_",project,"_mulgp.txt")
+  colnames(out_long) <- "EXP_Value"
+  output_file_path <- paste0(output_path,"long_format_",type,"_",project,"_mulgp.txt")
   write.table(out_long, output_file_path , append = FALSE, sep = "\t", dec = ",", row.names = TRUE, col.names = TRUE, quote = FALSE)
 }

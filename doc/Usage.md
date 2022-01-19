@@ -183,6 +183,12 @@ Rscript $CMRP_PATH/script/convert_to_longtb.Rscript \
   --name_list input_dataset_name.txt
   --input $CMRP_PATH/sample/orthologs/expression_matrix/ \
   --output ./
+  --matrix_type TMM
+Rscript $CMRP_PATH/script/convert_to_longtb.Rscript \
+  --name_list input_dataset_name.txt
+  --input $CMRP_PATH/sample/orthologs/expression_matrix/ \
+  --output ./
+  --matrix_type RC
 Rscript $CMRP_PATH/script/longtb_reorder.Rscript \
   --name_list input_dataset_name.txt \
   --input ./ \

@@ -214,7 +214,49 @@ function assembly () {
   fi
 }
 
+#=======================================================================================================
+##########################
+# genome-guided assembly #
+##########################
 
+function reference_mapping () {
+  cd ${PRJNA_PATH}
+  if [[ ! -e "ref/genomic.gtf" ]]; then
+    echo "There is no reference genome information under 'ref' directory. "
+    return 1
+  fi
+
+  echo ==== STAR generating the genome index ====
+  mkdir STAR
+  STAR --runThreadN 10 --runMode genomeGenerate \
+    --genomeDir ref/ref_index \
+    --genomeFastaFiles ref/*.fna \
+    --sjdbGTFfile ref/genomic.gtf
+
+  echo ==== STAR aligning reads ====
+  cd ./processed_data/
+  ulimit -n 5000
+  for f in *.fq ; do STAR --genomeDir ./../../../ref/ref_index --runThreadN 30 --readFilesIn "$f" --outFileNamePrefix "./../STAR/${f%_*}" --outSAMtype BAM SortedByCoordinate --outSAMunmapped Within --outSAMattributes Standard ; done
+  cd ..
+
+  echo ==== Trinity genome-guided assembly ====
+  for f in  *.bam; do $TRINITY_HOME/Trinity --genome_guided_bam $f --genome_guided_max_intron 10000 --max_memory 60G --CPU 20 --full_cleanup; done
+
+  if [[ -e './trinity_out_dir/*Trinity.fasta' ]]; then
+    mv -v ./trinity_out_dir/*Trinity.fasta ./trinity_out_dir/Trinity.fasta
+    echo
+    echo ==== De Novo Assembly END ====
+    echo
+
+    cd  ${PRJNA_PATH}
+    cp -r -v ./processed_data/trinity_out_dir .
+    rm -r -v ./processed_data/trinity_out_dir
+
+  else
+    echo === Assembly has some error! ===
+    return 1
+  fi
+}
 #=======================================================================================================
 ##################
 # quantification #

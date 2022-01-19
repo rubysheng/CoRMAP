@@ -187,6 +187,15 @@
 # # Guidience to install:
 # # use Miniconda3 to install
 # conda install -c bioconda bioawk
+#
+# 9. "STAR"
+#
+# # Description: RNA-Seq read alignment tool to generate the bam file
+#
+# # Guidience to install:
+# # use Miniconda3 to install
+# conda install -c bioconda star
+
 
 
 

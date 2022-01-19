@@ -49,14 +49,66 @@ function preprocessTPM() {
     cp -v ${TPM_NEWNAME} ${OUT_DIR}
 }
 
+function preprocessTMM() {
+  TAX_CODE="$1"
+  OUT_DIR="$2"
+  file=`basename $(pwd)`   # PRJNAXXXXXX
+  TMM_NEWNAME=${file}".gene.TMM"
+  Complete_name=${TAX_CODE}"_"${file}
+
+  # change "gene TMM expression matrix (rsem-gene.gene.TMM.EXPR.matrix)" format
+  if [ ! -e ${TMM_NEWNAME} ]; then
+    echo "No renamed file"
+    echo "    Reformating rsem-gene.gene.TMM.EXPR.matrix to "${TMM_NEWNAME}
+    echo
+    find . -name "rsem-gene.gene.TMM.EXPR.matrix" -exec cp -v {} ./tmp.gene_TMM.matrix \;
+    sed "s+TRINITY+${Complete_name}+g" tmp.gene_TMM.matrix > ${TMM_NEWNAME}
+    rm -v tmp.gene_TMM.matrix
+  fi
+
+    echo "Moving to the input directory"
+    cp -v ${TMM_NEWNAME} ${OUT_DIR}
+}
+
+function preprocessRC() {
+  TAX_CODE="$1"
+  OUT_DIR="$2"
+  file=`basename $(pwd)`   # PRJNAXXXXXX
+  RC_NEWNAME=${file}".gene.RC"
+  Complete_name=${TAX_CODE}"_"${file}
+
+  # change "gene Raw Counts expression matrix (rsem-gene.gene.counts.matrix)" format
+  if [ ! -e ${RC_NEWNAME} ]; then
+    echo "No renamed file"
+    echo "    Reformating rsem-gene.gene.counts.matrix to "${RC_NEWNAME}
+    echo
+    find . -name "rsem-gene.gene.counts.matrix" -exec cp -v {} ./tmp.gene_RC.matrix \;
+    sed "s+TRINITY+${Complete_name}+g" tmp.gene_RC.matrix > ${RC_NEWNAME}
+    rm -v tmp.gene_RC.matrix
+  fi
+
+    echo "Moving to the input directory"
+    cp -v ${RC_NEWNAME} ${OUT_DIR}
+}
+
 if [ ! "${list}" = "" ]; then # have a input list
-  input_dir="$(pwd)/TPM_input/"
+  input_tpm_dir="$(pwd)/TPM_input/"
+  input_tmm_dir="$(pwd)/TMM_input/"
+  input_rc_dir="$(pwd)/RC_input/"
   base_dir="$(pwd)"
   checkarray=()
 
-  if [ ! -e ${input_dir} ]; then
-    echo "Creating the input directory to hold all gene expression matrix files"
-    mkdir -v ${input_dir}
+  if [ ! -e ${input_tpm_dir} ]; then
+    echo "Creating the input directory to hold all gene expression matrix files (TPM)"
+    mkdir -v ${input_tpm_dir}
+  fi
+  if [ ! -e ${input_tmm_dir} ]; then
+    echo "Creating the input directory to hold all gene expression matrix files (TMM)"
+    mkdir -v ${input_tmm_dir}
+  fi
+  if [ ! -e ${input_rc_dir} ]; then
+    echo "Creating the input directory to hold all gene expression matrix files (Raw counts)"
+    mkdir -v ${input_rc_dir}
   fi
 
   while IFS=" " read -r f1 f2
@@ -66,16 +118,18 @@ if [ ! "${list}" = "" ]; then # have a input list
     SP_CODE="$f1"
     DIR="$f2"
     cd ${DIR}
-    preprocessTPM ${SP_CODE} ${input_dir}
+    preprocessTPM ${SP_CODE} ${input_tpm_dir}
+    preprocessTMM ${SP_CODE} ${input_tmm_dir}
+    preprocessRC ${SP_CODE} ${input_rc_dir}
     echo
-    echo "Check if the file is well - prepared in "${input_dir}
-    cd ${input_dir}
+    echo "Only check if the TPM file is well - prepared in "${input_tpm_dir}
+    cd ${input_tpm_dir}
     mvd_tpm=`basename ${DIR}`".gene.TPM"
     if [ ! -e ${mvd_tpm} ]; then  # test if the tpm file is moved to the destination
       echo "No file named "${mvd_tpm}" moved to input directory"
     else
       cd ..
-      find ${input_dir} -name ${mvd_tpm} -exec ls -l {} \;
+      find ${input_tpm_dir} -name ${mvd_tpm} -exec ls -l {} \;
       acc=`basename ${DIR}`
       checkarray+=("${acc}")
     fi

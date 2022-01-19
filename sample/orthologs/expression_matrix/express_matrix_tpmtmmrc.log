@@ -1,0 +1,47 @@
+Taxonomy_code: RDmus, Dir: /media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/data/PRJNA252803/
+
+Moving to the input directory
+'PRJNA252803.gene.TPM' -> '/media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/TPM_input/PRJNA252803.gene.TPM'
+No renamed file
+    Reformating rsem-gene.gene.TMM.EXPR.matrix to PRJNA252803.gene.TMM
+
+'./rsem-gene.gene.TMM.EXPR.matrix' -> './tmp.gene_TMM.matrix'
+removed 'tmp.gene_TMM.matrix'
+Moving to the input directory
+'PRJNA252803.gene.TMM' -> '/media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/TMM_input/PRJNA252803.gene.TMM'
+No renamed file
+    Reformating rsem-gene.gene.counts.matrix to PRJNA252803.gene.RC
+
+'./rsem-gene.gene.counts.matrix' -> './tmp.gene_RC.matrix'
+removed 'tmp.gene_RC.matrix'
+Moving to the input directory
+'PRJNA252803.gene.RC' -> '/media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/RC_input/PRJNA252803.gene.RC'
+
+Only check if the TPM file is well - prepared in /media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/TPM_input/
+-rwxrwxrwx 1 lewis lewis 2523314 Jan 19 12:05 /media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/TPM_input/PRJNA252803.gene.TPM
+Taxonomy_code: RDmus, Dir: /media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/data/PRJNA529794/
+
+No renamed file
+    Reformating rsem-gene.gene.TPM.not_cross_norm to PRJNA529794.gene.TPM
+
+'./rsem-gene.gene.TPM.not_cross_norm' -> './tmp.gene_TPM.matrix'
+removed 'tmp.gene_TPM.matrix'
+Moving to the input directory
+'PRJNA529794.gene.TPM' -> '/media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/TPM_input/PRJNA529794.gene.TPM'
+No renamed file
+    Reformating rsem-gene.gene.TMM.EXPR.matrix to PRJNA529794.gene.TMM
+
+'./rsem-gene.gene.TMM.EXPR.matrix' -> './tmp.gene_TMM.matrix'
+removed 'tmp.gene_TMM.matrix'
+Moving to the input directory
+'PRJNA529794.gene.TMM' -> '/media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/TMM_input/PRJNA529794.gene.TMM'
+No renamed file
+    Reformating rsem-gene.gene.counts.matrix to PRJNA529794.gene.RC
+
+'./rsem-gene.gene.counts.matrix' -> './tmp.gene_RC.matrix'
+removed 'tmp.gene_RC.matrix'
+Moving to the input directory
+'PRJNA529794.gene.RC' -> '/media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/RC_input/PRJNA529794.gene.RC'
+
+Only check if the TPM file is well - prepared in /media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/TPM_input/
+-rwxrwxrwx 1 lewis lewis 119739775 Jan 19 12:05 /media/lewis/New_Seagate_Drive_8TB/ruby/CMRP/sample/orthologs/expression_matrix/TPM_input/PRJNA529794.gene.TPM

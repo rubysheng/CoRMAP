@@ -91,6 +91,7 @@ function preprocessRC() {
     cp -v ${RC_NEWNAME} ${OUT_DIR}
 }
 
+
 if [ ! "${list}" = "" ]; then # have a input list
   input_tpm_dir="$(pwd)/TPM_input/"
   input_tmm_dir="$(pwd)/TMM_input/"
@@ -110,6 +111,7 @@ if [ ! "${list}" = "" ]; then # have a input list
     echo "Creating the input directory to hold all gene expression matrix files (Raw counts)"
     mkdir -v ${input_rc_dir}
   fi
+
 
   while IFS=" " read -r f1 f2
   do
@@ -134,5 +136,7 @@ if [ ! "${list}" = "" ]; then # have a input list
       checkarray+=("${acc}")
     fi
   done < "${list}"
+
+
   count_l=`wc -l < ${list}`
 fi

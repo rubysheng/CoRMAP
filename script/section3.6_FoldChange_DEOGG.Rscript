@@ -1,0 +1,224 @@
+#!/usr/bin/env Rscript
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager","argparse","readxl","writexl")
+BiocManager::install()
+
+suppressPackageStartupMessages(library(argparse))
+parser = ArgumentParser()
+parser$add_argument("--name_list", help="a file containing a list of dataset names", required=TRUE)
+parser$add_argument("--input", help="the folder holding input xlsx files (*_mulgp_clugene_sty.xlsx)", required=TRUE)
+parser$add_argument("--matrix_type", help="[Suffix] of matrix includes TPM (default), TMM, or RC (Raw Counts)", required=TRUE)
+parser$add_argument("--output", help="path to save the output files", required=TRUE)
+parser$add_argument("--projectname", help="a text file showing the common name and rank of projects", required=TRUE)
+parser$add_argument("--expr_Rdata", help="path to the saved RData for the master expression table", required=TRUE)
+parser$add_argument("--adj_method", help="character string specifying the method used to adjust p-values for multiple testing. (default 'none') See p.adjust for possible values. at topTags {edgeR}", required=TRUE,default="none")
+parser$add_argument("--p_value", help="numeric cutoff value for adjusted p-values. Only tags with adjusted p-values equal or lower than specified are returned.(default '0.05')", required=TRUE, default=0.05,type=float)
+parser$add_argument("--annotation", help="the annotation file for the OGGs", required=TRUE)
+
+args = parser$parse_args()
+
+name_list_file = args$name_list
+input_path = args$input
+type = args$matrix_type
+output_path = args$output
+projectname = args$projectname
+expr_Rdata_path = args$expr_Rdata
+adj.method = args$adj_method
+pv = args$p_value
+ogg_anno = args$annotation
+
+
+library(readxl)
+library(dplyr)
+library(reshape2)
+library(sva)
+library(pamr)
+library(limma)
+library(rlist)
+library(tidyverse)
+library(tidyr)
+library(edgeR)
+
+type_col_name <- paste0(type,"_Value")
+# functions --------------------------------------------------------------------
+tag <- function(input_df, col_in1, col_in2, col_out, pattern) {
+  input_df[col_out] <- paste(input_df[col_in1],input_df[col_in2],sep = pattern)
+}
+
+SVA_Edata_generater <- function(data = expr_output, group1 = "Group_Num", group2, group3){
+  group_var <- c(group1, group2, group3)
+  colnames(data)[match(type_col_name,colnames(data))] <- "Exp_Value"
+  caled_df <- data %>%
+    dplyr::group_by(across({{ group_var }})) %>%
+    dplyr::summarize(Exp_Value = mean(as.numeric(Exp_Value)))
+  caled_df$col_name <- apply(caled_df,1,tag, col_in1 = group2, col_in2 = group3, col_out = "col_name", pattern = "__")
+  output_table <-  data.frame(caled_df)
+  
+  return(output_table)
+}
+
+div <- function(line){
+  line[3] <- line[2]/ line[1]
+  line[4] <- line[1]/ line[2]
+  if (line[3]>=line[4]){ log2(line[3]) }else{ -log2(line[4]) }
+}
+
+# generate blank tables to hold the outputs  -----------------------------------
+avgexp_gp <- data.frame(Group_Num=character(),
+                        TPM_Value=numeric(),
+                        Sample=character(),
+                        Treatment=character(),
+                        Project=character())
+# load data --------------------------------------------------------------------
+
+load(expr_Rdata_path)
+
+# annotation --------------------------------------------------------------
+OGG2GeneName <- read.delim(ogg_anno, header = T, sep = "\t")
+OGG2GeneName <- unique(OGG2GeneName)
+OGG2GeneName.lst <- OGG2GeneName %>%
+  split(f = as.factor(.$Group)) %>%
+  lapply(., "[", , c("Gene_name"))
+all_genenames.tb <- data.frame(sapply(OGG2GeneName.lst, FUN = function(values) paste(values,collapse = "|")))
+colnames(all_genenames.tb) <- "gene_names"
+
+# average expression values by project and treat_code --------------------------
+
+pj_treat <- SVA_Edata_generater(expr_output, group2 = "Project", group3 = "TREAT_Code")
+colnames(pj_treat)[match("Exp_Value",colnames(pj_treat))] <- type_col_name
+
+# generate the expression data matrix for simple Fold-change calculation
+edata <- dcast(pj_treat[,c(1,5,4)], Group_Num ~ col_name, value.var = type_col_name)
+
+rownames(edata) <- edata[,1]
+edata <- edata[,-1]
+edata[is.na(edata)] <- 0
+edata[] <- lapply(edata, function(x) as.numeric(as.character(x)))
+
+df_fc <- edata
+files <- scan(name_list_file, character(), quote = "")
+for (i in 1:length(files)){
+  project <- files[i]
+  project_cols <- edata[,which(str_detect(colnames(edata), project))]
+  
+  df_fc <- cbind(df_fc, round(apply(project_cols, 1, FUN=function(x2) div(x2)),2))
+  colnames(df_fc)[length(colnames(df_fc))] <- paste0(project,"_log2fc")
+}
+
+fc_table <- df_fc[,c((ncol(edata)+1):ncol(df_fc))]
+
+colnames(fc_table) <- str_replace(colnames(fc_table),"_fc","")
+fc_table$group_num <- paste0("group_",rownames(fc_table))
+df_fc$group_num <- paste0("group_",rownames(df_fc))
+# save files 
+write.csv(df_fc,paste0(output_path,"simple_FC_",type,"_bygp.csv"), row.names = FALSE)
+save(fc_table,file = paste0(output_path,"simple_FC_",type,"_bygp.RData"))
+
+# subset all data of the selected dataset --------------------------------------
+files <- scan(name_list_file, character(), quote = "")
+
+for (i in 1:length(files)){
+  project <- files[i]
+  exp_tb <- expr_output[which(expr_output$Project==project),]
+  exp_tb$Sample <- paste(exp_tb$Project,exp_tb$Sample,sep = "-")
+  
+  # average TPM of genes in the same group for each dataset
+  for (smp in unique(exp_tb$Sample)) {
+    sg_smp <- subset(exp_tb,Sample==smp)
+    avgEXP_by_gpnb <- cbind(aggregate(sg_smp[,type_col_name], list(sg_smp$Group_Num), mean),
+                            smp,unique(sg_smp$Treatment),unique(sg_smp$Project))
+    colnames(avgEXP_by_gpnb) <- colnames(sg_smp)[c(1,9,6,7,4)]
+    avgexp_gp <- rbind(avgexp_gp,avgEXP_by_gpnb)
+  }
+  rm(sg_smp,smp,avgEXP_by_gpnb)
+  
+  
+  if (project == "PRJNA529794") {
+    # generating the sample/treatment description tb --------------------------
+    avgexp_tb <- cbind(avgexp_gp, Sample_spli<-data.frame(do.call('rbind', strsplit(as.character(avgexp_gp$Sample), '_', fixed=TRUE))))
+    for (cond in unique(avgexp_tb$X1)) {
+      max_pos_rep <- max(as.numeric(substring(unique(avgexp_tb[which(avgexp_tb$X1==cond & avgexp_tb$X3=="pos"),"X4"]), 4)))
+      avgexp_tb[which(avgexp_tb$X1==cond & avgexp_tb$X3=="neg"),"X4"] <- paste0("rep",as.numeric(substring(avgexp_tb[which(avgexp_tb$X1==cond & avgexp_tb$X3=="neg"),"X4"], 4))+max_pos_rep)
+    }
+    rm(max_pos_rep,cond)
+    
+    avgexp_tb$X2 <- paste(avgexp_tb$X1,avgexp_tb$X4,sep="_")
+    sample_cat <- unique(avgexp_tb[,c("X1","X2")])
+    colnames(sample_cat) <- c("Treatment","Sample")
+    
+    smp_colnames <- c()
+    for (tret in unique(sample_cat$Treatment)) {
+      smp_cols <- sample_cat$Sample[which(sample_cat$Treatment==tret)]
+      smp_colnames <- c(smp_colnames,smp_cols)
+    }
+    rm(tret,smp_cols)
+    exp_colnames <- smp_colnames
+    
+    max_hc_rep <- max(as.numeric(substring(exp_colnames[str_detect(exp_colnames,"HomeCage")], regexpr("_rep", exp_colnames[str_detect(exp_colnames,"HomeCage")])+4)))
+    exp_colnames[str_detect(exp_colnames,"NonShock")] <- paste0(substring(exp_colnames[str_detect(exp_colnames,"NonShock")], 0,regexpr("_rep", exp_colnames[str_detect(exp_colnames,"NonShock")])+3), as.numeric(substring(exp_colnames[str_detect(exp_colnames,"NonShock")], regexpr("_rep", exp_colnames[str_detect(exp_colnames,"NonShock")])+4))+max_hc_rep)
+    
+    exp_colnames <- str_replace_all(exp_colnames,pattern = c("HomeCage|NonShock"), replacement = "Control")
+    
+    # generate subgroups' expression matrix
+    avgexp_tb$Sample_name <- avgexp_tb$X2
+    exp_mx <- spread(avgexp_tb[,c("Group_Num",type_col_name,"Sample_name")], key=Sample_name, value=type_col_name)
+    rownames(exp_mx) <- exp_mx$Group_Num
+    countMatrix <- exp_mx[,smp_colnames]
+    colnames(countMatrix) <- exp_colnames
+    group <- factor(substring(colnames(countMatrix), 0, regexpr("_rep", colnames(countMatrix)) - 1))
+    
+  } else {
+    exp_mx <- spread(avgexp_gp[,c("Group_Num",type_col_name,"Sample")], Sample, type_col_name)
+    rownames(exp_mx) <- exp_mx$Group_Num
+    countMatrix <- exp_mx[,unique(avgexp_gp$Sample)]
+    group <- factor(substring(colnames(countMatrix), 0, regexpr("_rep", colnames(countMatrix)) - 1))
+  }
+  
+  
+  # save files 
+  output_file_path <- paste0(output_path,project,"_avg",type,"_matrix_bygp.RData")
+  save(countMatrix,group,file = output_file_path)
+  
+  # DEG analysis ------------------------------------------------------------
+  y <- DGEList(counts = countMatrix, group = group)
+  
+  keep <- rowSums(cpm(y)>1) >= 2
+  y_filter0 <- y[keep, , keep.lib.sizes=FALSE]
+  
+  y_normed <- calcNormFactors(y_filter0 ,method = 'TMM')
+  
+  subGroup <- factor(substring(colnames(countMatrix), regexpr("_rep", colnames(countMatrix))+4))
+  design <- model.matrix(~ subGroup+group)
+  rownames(design) <- colnames(y_normed)
+  
+  dge <- estimateDisp(y_normed, design, robust=TRUE)
+  
+  #negative binomial generalized log-linear model 
+  fit <- glmFit(dge, design, robust = TRUE)     
+  lrt <- glmLRT(fit)   
+  
+  resNoFilt <- topTags(lrt,n=nrow(lrt$table),adjust.method = adj.method,p.value = pv)
+  sigDownReg <- resNoFilt$table[resNoFilt$table$PValue<pv,]
+  sigDownReg <- sigDownReg[order(sigDownReg$logFC),]
+  
+  rownames(sigDownReg) <- paste0("group_",rownames(sigDownReg) )
+  sigDownReg <- merge(sigDownReg,all_genenames.tb, by = "row.names")
+  
+  colnames(sigDownReg)[-1] <- paste0(project,"_",colnames(sigDownReg)[-1])
+  colnames(sigDownReg)[1] <- "Group"
+  
+  
+  # save files 
+  output_file_path <- paste0(output_path,project,"_avg",type,"_DEOGG.RData")
+  save(sigDownReg,group,file = output_file_path)
+  output_file_path <- paste0(output_path,project,"_avg",type,"_DEOGG.csv")
+  write.csv(sigDownReg,row.names = FALSE, output_file_path, quote = FALSE)
+  # assign(project,sigDownReg)
+}
+
+
+
+
+
+

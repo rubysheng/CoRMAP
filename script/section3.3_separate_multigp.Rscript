@@ -1,0 +1,77 @@
+#!/usr/bin/env Rscript
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager","argparse","readxl","writexl","stringr")
+BiocManager::install()
+
+suppressPackageStartupMessages(library(argparse))
+parser = ArgumentParser()
+parser$add_argument("--name_list", help="a file containing a list of dataset names", required=TRUE)
+parser$add_argument("--input", help="the folder holding input long formated tables (long_format_*_mulgp.txt)", required=TRUE)
+parser$add_argument("--matrix_types", help="[Suffix] of matrix includes TPM, TMM, or RC (Raw Counts)", required=TRUE)
+parser$add_argument("--output", help="path to save the output xlsx files", required=TRUE)
+args = parser$parse_args()
+
+name_list_file = args$name_list
+input_path = args$input
+types = args$matrix_types
+output_path = args$output
+
+
+library(readxl)
+library(writexl)
+library(stringr)
+
+
+files <- scan(name_list_file, character(), quote = "")
+
+
+duplicate_rows <- function(Group_Num,Species,Project,gene,treatment,TPM_Value,multi) {
+  expanded_samples <- paste0("rep", 1:multi)
+  Group_Nums <- unlist(str_split(Group_Num,"/"))
+  repeated_rows <- data.frame("Group_Num"=Group_Nums,"Species"=Species,"Project"=Project,"gene"=gene,"treatment"=treatment,"TPM_Value"=TPM_Value,"multi"=expanded_samples)
+  repeated_rows
+}
+
+rename_gene <- function(new_df2,col1,col2) {
+  gene <- as.character(new_df2[col2])
+  loc <- str_locate(gene,"_")[1,1]
+  paste0("g",new_df2[col1],str_sub(gene,loc,nchar(gene)))
+}
+
+count_pt <- function(mul,col) { str_count(mul[col],"/")+1 }
+
+types = strsplit(types, ",")[[1]]
+type_1 = types[[1]][1]
+
+for (i in 1:length(files)){
+  project <- files[i]
+  file_path <- paste0(input_path,"long_format_",type_1,"_",project,"_mulgp.xlsx")
+  long_df <- read_xlsx(file_path)
+  slash_loc <- which(grepl(pattern="/", x=long_df$Group_Num))
+  if (length(slash_loc)!=0) {
+    for (type in types) {
+      file_path <- paste0(input_path,"long_format_",type,"_",project,"_mulgp.xlsx")
+      long_df <- read_xlsx(file_path)
+      slash_loc <- which(grepl(pattern="/", x=long_df$Group_Num))
+      single <- data.frame(long_df[-slash_loc,])
+      rownames(single) <- 1:nrow(single)
+      mul <- data.frame(long_df[grepl(pattern="/", x=long_df$Group_Num),])
+      rownames(mul) <- 1:nrow(mul)
+      mul[,"multi"] <- apply(mul,1,count_pt, col="Group_Num")
+      # mul
+      expanded_rows <- Map(f = duplicate_rows,mul$Group_Num,mul$Species,mul$Project,mul$gene,mul$treatment,mul$TPM_Value,mul$multi)
+      new_mul <- do.call(rbind, expanded_rows)
+      new_mul$gene <- apply(new_mul, 1, rename_gene, col1="Group_Num",col2="gene")
+      rownames(new_mul) <- 1:nrow(new_mul)
+      mul <- new_mul[1:6]
+      out_long <- rbind(mul,single)
+      output_file_path <- paste0(output_path,"long_format_",type,"_",project,"_mulgp.xlsx")
+      write_xlsx(out_long,output_file_path)
+    }
+    
+
+  }
+}
+
+

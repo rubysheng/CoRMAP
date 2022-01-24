@@ -1,0 +1,2 @@
+chrM	Cufflinks	exon	17	16292	0	+	.	gene_id "mask_1"; transcript_id "mask_id1/+";
+chrM	Cufflinks	exon	17	16292	0	-	.	gene_id "mask_1"; transcript_id "mask_id1/-";

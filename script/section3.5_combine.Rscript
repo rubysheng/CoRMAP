@@ -1,0 +1,129 @@
+#!/usr/bin/env Rscript
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager","argparse","readxl")
+BiocManager::install()
+
+suppressPackageStartupMessages(library(argparse))
+parser = ArgumentParser()
+parser$add_argument("--name_list", help="a file containing a list of dataset names", required=TRUE)
+parser$add_argument("--input", help="the folder holding input xlsx files (*_mulgp_clugene_sty.xlsx)", required=TRUE)
+parser$add_argument("--matrix_type", help="[Suffix] of matrix includes TPM (default), TMM, or RC (Raw Counts)", required=TRUE)
+parser$add_argument("--treatcode", help="a text file showing how to classify treatments", required=TRUE)
+parser$add_argument("--output", help="path to save the output files", required=TRUE)
+
+args = parser$parse_args()
+
+name_list_file = args$name_list
+input_path = args$input
+type = args$matrix_type
+treatcode_path = args$treatcode
+output_path = args$output
+
+
+
+library(readxl)
+library(dplyr)
+library(reshape2)
+library(sva)
+library(pamr)
+library(limma)
+library(rlist)
+library(tidyverse)
+
+type_col_name <- paste0(type,"_Value")
+
+# functions --------------------------------------------------------------------
+tag <- function(input_df, col_group,col_gene, col_t2) {
+  input_df[col_t2] <- paste(input_df[col_group], 
+                            input_df[col_gene],
+                            input_df[col_t2],
+                            sep = "|")
+}
+
+# general expression distribution stats
+exp_stats <- function(col_name){
+  stats_info <- summary(input_df[,col_name])
+  stats_df <- data.frame("project"=project, col_name, t(matrix(stats_info)), 
+                         IQR(input_df[,col_name]), sd(input_df[,col_name]))
+  colnames(stats_df)[-1]<- c("Exp_Type","Min.","1st Qu.","Median","Mean",
+                             "3rd Qu.","Max.","IQR","stdev")
+  stats_table <- rbind(stats_table,stats_df)
+  return(stats_table)
+}
+
+# generate blank tables to hold the final outputs-------------------------------
+stats_table <- data.frame("project"=NULL,"exp_type"=NULL,"Min."=NULL,
+                          "1st Qu."=NULL,"Median"=NULL,"Mean"=NULL,
+                          "3rd Qu."=NULL,"Max."=NULL,"IQR"=NULL,"stdev"=NULL)
+
+avg_rep_exp_output <- data.frame("group_num"=NULL,"gene"=NULL,"treatment"=NULL,
+                                 "TPM"=NULL,"species"=NULL,"project"=NULL,
+                                 "common_name"=NULL,"study_type"=NULL,
+                                 "study_design"=NULL,"learning_program"=NULL,
+                                 "type_of_learning"=NULL,"type_of_memory"=NULL,
+                                 "time_frame"=NULL,"stress"=NULL,"reward"=NULL,
+                                 "time_point"=NULL)
+
+expr_output <- data.frame("Group_Num"=NULL,"Taxa_Group"=NULL,"Species"=NULL,
+                          "Project"=NULL,"gene"=NULL,"Sample"=NULL,
+                          "Treatment"=NULL)
+expr_output[,type_col_name] <- NULL
+
+
+
+files <- scan(name_list_file, character(), quote = "")
+
+for (i in 1:length(files)){
+  # load the meta table 
+  project <- files[i]
+  file_path <- paste0(input_path,project,"_mulgp_clugene_sty.xlsx")
+  input_df <- read_xlsx(file_path)
+  colnames(input_df)[c(5,12)] <- c("treatment","study_design")
+  input_df <- as.data.frame(input_df)
+  input_df[,type_col_name] <- as.numeric(input_df[,type_col_name])
+  
+  stats_table <- exp_stats(type_col_name)
+  
+  treatmnt <- data.frame(do.call('rbind', strsplit(as.character(input_df$treatment),'_rep',fixed=TRUE)))
+  input_df$treatment2 <- treatmnt$X1
+  
+  exp_df <- input_df[,c(1,20,2,3,4,5,21,match(type_col_name,colnames(input_df)))]
+  colnames(exp_df)[6:7] <- c("Sample","Treatment")
+  expr_output <- rbind(expr_output,exp_df)
+  
+  # Average the expression values of replicates by Generalized Treatment (only Fear and Control)
+  input_df$treatment2 <- apply(input_df,1,tag,col_group="Group_Num", col_gene="gene",col_t2="treatment2")
+  pro_calEXP_df <- aggregate(input_df[,type_col_name],by=list(input_df$treatment2), FUN=mean)
+  pro_calEXP_expdf <- data.frame(do.call('rbind', strsplit(as.character(pro_calEXP_df$Group.1),'|',fixed=TRUE)))
+  pro_calEXP_expdf[,type_col_name] <- pro_calEXP_df$x
+  colnames(pro_calEXP_expdf)[1:3]<-c("group_num","gene","treatment")
+  df <-unique(input_df[,c(2,3,10,11,12,13,14,15,16,17,18,19)])
+  output_df <- cbind(pro_calEXP_expdf, df[rep(seq_len(nrow(df)), each =  nrow(pro_calEXP_expdf)), ])
+  rownames(output_df) <- 1:nrow(output_df)
+  colnames(output_df)[5:ncol(output_df)] <- c("species","project","common_name","study_type","study_design","learning_program","type_of_learning","type_of_memory","time_frame","stress","reward","time_point")
+  avg_rep_exp_output <- rbind(avg_rep_exp_output,output_df)
+  
+}
+
+treatcod <- read.delim(treatcode_path)
+a <- unique(expr_output$Treatment)
+b <- treatcod$treatment
+if (length(a[which(!a %in% b)])!=0) {
+  add <- data.frame(treatment=a[which(!a %in% b)], 
+                    TREAT_Code=c(1,2,1,2,2,2,1,1,1,1))
+  rm(a);rm(b)
+  treatcod <- rbind(treatcod,add)
+  rm(add)
+}
+colnames(treatcod)[1] <- "Treatment"
+expr_output <- inner_join(expr_output,treatcod)
+expr_output <- expr_output[,c(1:7,9,8)]
+
+# save files
+save(expr_output, file = paste0(output_path,"exp_",type,"_output.RData" ))
+write.csv(expr_output,paste0(output_path,"exp_",type,"_output.csv"), row.names = FALSE)
+
+write.csv(stats_table,paste0(output_path,"exp",type,"_stats.csv"), row.names = FALSE)
+save(avg_rep_exp_output, file = paste0(output_path,"avg_rep_",type,".RData"))
+write.csv(avg_rep_exp_output,paste0(output_path,"avg_rep_",type,".csv"), row.names = FALSE)

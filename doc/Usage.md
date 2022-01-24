@@ -178,39 +178,72 @@ source $CMRP_PATH/script/section2.4.1_exp_extract.sh ../annotation/RD_uniq_dna.l
 Run with the following R scripts to help analyze the data generate final tables.
 ```SHELL
 # at "$CMRP_PATH/sample/output/R_analysis"
-Rscript $CMRP_PATH/script/install_packages.R
-Rscript $CMRP_PATH/script/convert_to_longtb.Rscript \
-  --name_list input_dataset_name.txt
+Rscript $CMRP_PATH/script/section3.0_install_packages.R
+
+Rscript $CMRP_PATH/script/section3.1_to_longtb.Rscript \
+  --name_list input_dataset_name.txt \
   --input $CMRP_PATH/sample/orthologs/expression_matrix/ \
-  --output ./
+  --output ./ \
   --matrix_type TMM
-Rscript $CMRP_PATH/script/convert_to_longtb.Rscript \
-  --name_list input_dataset_name.txt
+Rscript $CMRP_PATH/script/section3.1_to_longtb.Rscript \
+  --name_list input_dataset_name.txt \
   --input $CMRP_PATH/sample/orthologs/expression_matrix/ \
-  --output ./
+  --output ./ \
   --matrix_type RC
-Rscript $CMRP_PATH/script/longtb_reorder.Rscript \
+Rscript $CMRP_PATH/script/section3.1_to_longtb.Rscript \
   --name_list input_dataset_name.txt \
-  --input ./ \
-  --output ./
-Rscript $CMRP_PATH/script/apply.Rscript \
-  --name_list input_dataset_name.txt \
-  --input ./ \
-  --output ./
-Rscript $CMRP_PATH/script/xlsx_add_study.Rscript \
+  --input $CMRP_PATH/sample/orthologs/expression_matrix/ \
+  --output ./ \
+  --matrix_type TPM
+  
+Rscript $CMRP_PATH/script/section3.2_reorder.Rscript \
   --name_list input_dataset_name.txt \
   --input ./ \
   --output ./ \
-  --studytype study_type.xlsx
-Rscript $CMRP_PATH/script/combine.Rscript \
+  --matrix_type TMM
+Rscript $CMRP_PATH/script/section3.2_reorder.Rscript \
   --name_list input_dataset_name.txt \
   --input ./ \
-  --output ./
+  --output ./ \
+  --matrix_type RC
+Rscript $CMRP_PATH/script/section3.2_reorder.Rscript \
+  --name_list input_dataset_name.txt \
+  --input ./ \
+  --output ./ \
+  --matrix_type TPM
+  
+  
+Rscript $CMRP_PATH/script/section3.3_separate_multigp.Rscript \
+  --name_list input_dataset_name.txt \
+  --input ./ \
+  --output ./ \
+  --matrix_types TMM,RC,TPM
+
+Rscript $CMRP_PATH/script/section3.4_add_study.Rscript \
+  --name_list input_dataset_name.txt \
+  --input ./ \
+  --output ./ \
+  --studytype study_type.xlsx \
+  --matrix_types TMM,RC,TPM
+  
+Rscript $CMRP_PATH/script/section3.5_combine.Rscript \
+  --name_list input_dataset_name.txt \
+  --input ./ \
+  --output ./ \
+  --matrix_type TMM \
+  --treatcode treat_code.txt
+  
+Rscript $CMRP_PATH/script/section3.6_FoldChange_DEOGG.Rscript \
+  --name_list input_dataset_name.txt \
+  --input ./ \
+  --output ./ \
+  --matrix_type TMM \
+  --projectname ./Project_name_by_species.txt \
+  --expr_Rdata ./exp_TMM_output.RData \
+  --adj_method none \
+  --p_value 0.05 \
+  --annotation Unique_OGG_GENENAME.txt
+
 ```
-- convert_to_longtb.Rscript
-- longtb_reorder.Rscript
-- apply.Rscript
-- xlsx_add_study.Rscript
-- combine.Rscript
 
 [Back to top](#usage-the-cmrp)

@@ -13,7 +13,7 @@ parser$add_argument("--output", help="path to save the output files", required=T
 parser$add_argument("--projectname", help="a text file showing the common name and rank of projects", required=TRUE)
 parser$add_argument("--expr_Rdata", help="path to the saved RData for the master expression table", required=TRUE)
 parser$add_argument("--adj_method", help="character string specifying the method used to adjust p-values for multiple testing. (default 'none') See p.adjust for possible values. at topTags {edgeR}", required=TRUE,default="none")
-parser$add_argument("--p_value", help="numeric cutoff value for adjusted p-values. Only tags with adjusted p-values equal or lower than specified are returned.(default '0.05')", required=TRUE, default=0.05,type=float)
+parser$add_argument("--p_value", help="numeric cutoff value for adjusted p-values. Only tags with adjusted p-values equal or lower than specified are returned.(default '0.05')", required=TRUE, default=0.05)
 parser$add_argument("--annotation", help="the annotation file for the OGGs", required=TRUE)
 
 args = parser$parse_args()

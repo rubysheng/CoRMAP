@@ -1,0 +1,39 @@
+﻿Run,Cell_type,Mouse_ID,treatment
+SRR8809606,dVenus_pos,MouseNr 01,Fear Conditioned
+SRR8809608,dVenus_neg,MouseNr 01,Fear Conditioned
+SRR8809607,dVenus_pos,MouseNr 03,Fear Conditioned
+SRR8809609,dVenus_neg,MouseNr 03,Fear Conditioned
+SRR8809613,dVenus_pos,MouseNr 04,Fear Conditioned
+SRR8809617,dVenus_neg,MouseNr 04,Fear Conditioned
+SRR8809610,dVenus_pos,MouseNr 05,Fear Conditioned
+SRR8809614,dVenus_neg,MouseNr 05,Fear Conditioned
+SRR8809611,dVenus_pos,MouseNr 06,Fear Conditioned
+SRR8809615,dVenus_neg,MouseNr 06,Fear Conditioned
+SRR8809612,dVenus_pos,MouseNr 07,Fear Conditioned
+SRR8809616,dVenus_neg,MouseNr 07,Fear Conditioned
+SRR8809623,dVenus_pos,MouseNr 09,Fear Conditioned
+SRR8809629,dVenus_neg,MouseNr 09,Fear Conditioned
+SRR8809618,dVenus_pos,MouseNr 10,Fear Conditioned
+SRR8809624,dVenus_neg,MouseNr 10,Fear Conditioned
+SRR8809619,dVenus_pos,MouseNr 11,Fear Conditioned
+SRR8809625,dVenus_neg,MouseNr 11,Fear Conditioned
+SRR8809620,dVenus_pos,MouseNr 12,Fear Conditioned
+SRR8809626,dVenus_neg,MouseNr 12,Fear Conditioned
+SRR8809621,dVenus_pos,MouseNr 13,Fear Conditioned
+SRR8809627,dVenus_neg,MouseNr 13,Fear Conditioned
+SRR8809622,dVenus_pos,MouseNr 14,Fear Conditioned
+SRR8809628,dVenus_neg,MouseNr 14,Fear Conditioned
+SRR8809630,dVenus_pos,MouseNr 15,HomeCage
+SRR8809633,dVenus_neg,MouseNr 15,HomeCage
+SRR8809631,dVenus_pos,MouseNr 16,HomeCage
+SRR8809634,dVenus_neg,MouseNr 16,HomeCage
+SRR8809632,dVenus_pos,MouseNr 17,HomeCage
+SRR8809635,dVenus_neg,MouseNr 17,HomeCage
+SRR8809636,dVenus_pos,MouseNr 18,Non Shock
+SRR8809640,dVenus_neg,MouseNr 18,Non Shock
+SRR8809637,dVenus_pos,MouseNr 19,Non Shock
+SRR8809641,dVenus_neg,MouseNr 19,Non Shock
+SRR8809638,dVenus_pos,MouseNr 20,Non Shock
+SRR8809642,dVenus_neg,MouseNr 20,Non Shock
+SRR8809639,dVenus_pos,MouseNr 21,Non Shock
+SRR8809643,dVenus_neg,MouseNr 21,Non Shock
